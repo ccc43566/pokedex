@@ -136,4 +136,10 @@ docker compose -p pokedex up -d --build api web caddy
 
 恢复后核对数据库和媒体卷，再访问站点。若迁移前恢复的是当前旧数据库，其 `version_sprite` 表已存在而 `alembic_version` 仍在 `0001_initial_schema`；新版 API 启动迁移后应核对标记变成 `0002_version_sprites`。若恢复失败，不要运行重新采集来掩盖问题，先查看备份与容器日志。
 
+### 可选：通过 Docker Hub 在线搬运卷
+
+普通的 `docker push` / `docker pull` 只搬运**镜像**，不会携带挂载的 PostgreSQL 或图片卷。[Docker 官方说明](https://docs.docker.com/desktop/settings-and-maintenance/backup-and-restore/)明确要求卷数据单独备份。不过，Docker Desktop 的 **Volumes → 卷名 → Exports → Quick export → Registry** 可把卷内容导出为 Docker Hub 上的镜像；新电脑在 **Volumes → 卷名 → Import → Registry** 导入。详见 [Docker Desktop 卷导出／导入文档](https://docs.docker.com/desktop/use-desktop/volumes/)。
+
+若选这个图形界面方法，分别处理 `pokedex_pokedex_postgres` 和 `pokedex_pokedex_media`，使用**私有** Docker Hub 仓库；数据库卷含现有数据，图片卷约 7.9 GB，上传／下载会耗时且需确认账号容量。先停止项目服务并确认无写入，导出后在新电脑**启动数据库前**导入到空的同名卷，再启动 `db api web caddy`。导入会替换目标卷已有内容；不要导入到已有重要数据的卷。根目录 `.env` 仍需通过安全渠道单独传输。数据库跨机器迁移仍以本节上方的 `pg_dump`／`pg_restore` 逻辑备份方式更便于核验；Docker Hub 导出卷可作为在线传输的备选，并应在新电脑验证数据与图片。
+
 外部服务：PokéAPI 是未来同步的数据源；GitHub 保存公开源码；Docker 镜像仓库和 Python/npm 软件源只在拉镜像／安装依赖时使用。现有 Compose 没有配置云数据库、对象存储或公网域名；若以后要公网部署，域名、HTTPS、备份周期和可用资源尚待决定。
