@@ -1,0 +1,81 @@
+{
+  "app": {
+    "subtitle": "Pokémon encyclopedia",
+    "attribution": "Data provided by PokeAPI. Pokémon and related names are trademarks of Nintendo, Creatures Inc., and GAME FREAK inc."
+  },
+  "nav": {
+    "pokemon": "Pokémon",
+    "types": "Types"
+  },
+  "home": {
+    "eyebrow": "Local mirror · bilingual",
+    "title": "Explore the world of Pokémon",
+    "description": "Search by number, name, type, or generation. Inspect forms, abilities, base stats, and evolution chains.",
+    "searchPlaceholder": "Try Pikachu, 皮卡丘, or 25",
+    "search": "Search Pokédex",
+    "browse": "Browse all Pokémon",
+    "featured": "Featured Pokémon"
+  },
+  "filters": {
+    "title": "Filter Pokédex",
+    "searchPlaceholder": "Name or number",
+    "allTypes": "All types",
+    "allGenerations": "All generations",
+    "sort": "Sort",
+    "sortId": "Dex number",
+    "sortName": "English name",
+    "sortBaseExperience": "Base experience",
+    "sortNewest": "Newest sync",
+    "apply": "Apply",
+    "clear": "Clear",
+    "more": "More",
+    "less": "Less",
+    "legendary": "Legendary Pokémon",
+    "mythical": "Mythical Pokémon",
+    "results": "{count} results",
+    "allShown": "Showing all",
+    "loadingRemaining": "Showing {count} of {total}; loading the rest",
+    "partialShown": "Showing {count} of {total}"
+  },
+  "pokemon": {
+    "back": "Back to Pokédex",
+    "close": "Close details",
+    "selected": "Selected",
+    "fullPage": "Open full page",
+    "legendaryShort": "Legendary",
+    "mythicalShort": "Mythical",
+    "description": "Pokédex entry",
+    "stats": "Base stats",
+    "abilities": "Abilities",
+    "evolution": "Evolution",
+    "forms": "Forms",
+    "media": "Media",
+    "hiddenAbility": "Hidden ability",
+    "height": "Height",
+    "weight": "Weight",
+    "baseExperience": "Base experience",
+    "notFound": "Pokémon not found"
+  },
+  "types": {
+    "title": "Type encyclopedia",
+    "description": "Inspect type effectiveness, resistances, and immunities.",
+    "effectiveness": "Type relationships",
+    "double_damage_to": "Deals 2× damage",
+    "half_damage_to": "Deals ½ damage",
+    "no_damage_to": "Deals no damage",
+    "double_damage_from": "Takes 2× damage",
+    "half_damage_from": "Takes ½ damage",
+    "no_damage_from": "Immune"
+  },
+  "common": {
+    "loading": "Loading…",
+    "loadingAll": "Loading all results",
+    "loadingPage": "Loading page {page}",
+    "error": "Failed to load. Please try again.",
+    "retry": "Try again",
+    "previous": "Previous",
+    "next": "Next",
+    "page": "Page {page} / {total}",
+    "empty": "No data"
+  }
+}

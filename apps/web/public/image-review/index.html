@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="zh-Hans">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>图片体积对照 · Pokédex</title>
+    <style>
+      :root { --paper:#f2f6f8; --surface:#fff; --ink:#1b2733; --muted:#667685; --line:#ccd7de; --red:#e84a4a; --thumb:92px; }
+      * { box-sizing:border-box; }
+      [hidden] { display:none !important; }
+      html { scroll-behavior:smooth; }
+      body { margin:0; color:var(--ink); background:var(--paper); font-family:Inter,'PingFang SC','Microsoft YaHei UI',system-ui,sans-serif; }
+      button,input,select { font:inherit; }
+      button,a,input,select { -webkit-tap-highlight-color:transparent; }
+      button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible { outline:3px solid var(--red); outline-offset:2px; }
+      a { color:inherit; }
+      .topbar { display:flex; align-items:center; justify-content:space-between; gap:1rem; min-height:68px; padding:0 max(1.2rem,calc((100vw - 1280px)/2)); background:#fff; border-bottom:1px solid var(--line); }
+      .brand { display:flex; align-items:center; gap:.8rem; text-decoration:none; font-size:1.15rem; font-weight:850; }
+      .brand-mark { display:grid; place-items:center; width:2.4rem; height:2.4rem; color:white; background:var(--red); border-radius:50%; }
+      .topbar-link { color:var(--muted); font-size:.88rem; font-weight:650; text-decoration:none; }
+      .topbar-link:hover { color:var(--red); }
+      main { max-width:1280px; margin:auto; padding:2.25rem 1.25rem 6rem; }
+      .eyebrow { margin:0 0 .65rem; color:var(--red); font-size:.72rem; font-weight:850; letter-spacing:.13em; }
+      h1 { margin:0; font-size:clamp(2rem,4vw,3.5rem); line-height:1.1; letter-spacing:-.04em; }
+      h2 { margin:0; font-size:clamp(1.35rem,2.4vw,2rem); letter-spacing:-.025em; }
+      h3 { margin:0; font-size:1rem; }
+      .lede { max-width:760px; margin:1rem 0 0; color:var(--muted); font-size:.98rem; line-height:1.7; }
+      .hero { display:flex; align-items:end; justify-content:space-between; gap:2rem; }
+      .hero-actions { display:flex; flex-wrap:wrap; gap:.55rem; }
+      .button { display:inline-flex; justify-content:center; align-items:center; min-height:2.4rem; padding:.55rem .85rem; border:1px solid var(--line); border-radius:.65rem; background:white; color:var(--ink); cursor:pointer; font-size:.85rem; font-weight:700; text-decoration:none; white-space:nowrap; }
+      .button:hover { border-color:var(--red); }
+      .button--red { border-color:var(--red); background:var(--red); color:#fff; }
+      .button--red:hover { background:#cb3535; color:#fff; }
+      .stats { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:.75rem; margin:2rem 0 2.75rem; }
+      .stat { padding:1rem 1.1rem; border:1px solid var(--line); border-radius:.9rem; background:#fff; }
+      .stat strong { display:block; font-size:1.55rem; font-variant-numeric:tabular-nums; letter-spacing:-.035em; }
+      .stat span { display:block; margin-top:.2rem; color:var(--muted); font-size:.76rem; }
+      .section { margin-top:2.5rem; }
+      .section-head { display:flex; align-items:end; justify-content:space-between; gap:1rem; margin-bottom:1rem; }
+      .section-head p { margin:.3rem 0 0; color:var(--muted); font-size:.88rem; line-height:1.55; }
+      .section-index { flex:none; color:var(--red); font-size:.78rem; font-weight:850; font-variant-numeric:tabular-nums; }
+      .feature-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:.75rem; }
+      .feature-card,.image-card,.compare-card { min-width:0; border:1px solid var(--line); border-radius:.9rem; background:#fff; overflow:hidden; }
+      .feature-card { padding:.75rem; }
+      .feature-stage { display:grid; grid-template-columns:1fr 1fr; gap:.5rem; }
+      .preview { display:grid; place-items:center; min-width:0; overflow:hidden; border:1px solid #e3eaf0; border-radius:.6rem; background:var(--paper); }
+      .preview--small { height:112px; }
+      .preview--large { height:210px; }
+      .preview--small img { width:92px; height:92px; max-width:100%; object-fit:contain; }
+      .preview--large img { width:184px; height:184px; max-width:100%; object-fit:contain; }
+      .preview-label { margin:.4rem 0 0; color:var(--muted); font-size:.68rem; text-align:center; }
+      .feature-meta { display:flex; justify-content:space-between; gap:.4rem; align-items:baseline; margin-top:.8rem; }
+      .feature-meta strong { font-size:.98rem; }
+      .size { color:var(--red); font-weight:800; font-variant-numeric:tabular-nums; white-space:nowrap; }
+      .muted { color:var(--muted); }
+      .small { font-size:.75rem; line-height:1.5; }
+      .feature-actions { display:flex; gap:.45rem; margin-top:.75rem; }
+      .feature-actions .button { flex:1; min-width:0; font-size:.72rem; }
+      details { margin-top:1rem; border:1px solid var(--line); border-radius:.8rem; background:#fff; }
+      summary { padding:.85rem 1rem; cursor:pointer; font-weight:750; }
+      .details-body { padding:0 1rem 1rem; }
+      .file-row { display:grid; grid-template-columns:1fr auto auto; gap:.75rem; align-items:center; padding:.5rem 0; border-top:1px solid #e8edf0; font-size:.78rem; }
+      .file-row code { min-width:0; overflow-wrap:anywhere; color:var(--muted); }
+      .file-row a { color:var(--red); font-weight:700; text-decoration:none; }
+      .toolbar { position:sticky; top:0; z-index:10; padding:.9rem; border:1px solid var(--line); border-radius:.9rem; background:rgb(255 255 255 / 96%); box-shadow:0 6px 18px rgb(27 39 51 / 7%); }
+      .controls { display:grid; grid-template-columns:minmax(180px,2fr) repeat(4,minmax(120px,1fr)); gap:.55rem; }
+      .field { min-width:0; display:flex; flex-direction:column; gap:.25rem; color:var(--muted); font-size:.68rem; font-weight:700; }
+      .field input,.field select { width:100%; height:2.4rem; padding:.45rem .65rem; border:1px solid var(--line); border-radius:.55rem; background:white; color:var(--ink); font-size:.82rem; }
+      .toolbar-bottom { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:.6rem; margin-top:.7rem; }
+      .toolbar-bottom label { display:flex; align-items:center; gap:.55rem; color:var(--muted); font-size:.76rem; }
+      .toolbar-bottom output { color:var(--ink); font-variant-numeric:tabular-nums; font-weight:700; }
+      .result-line { display:flex; justify-content:space-between; gap:1rem; margin:.9rem 0; color:var(--muted); font-size:.82rem; }
+      .catalog-grid { display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:.65rem; }
+      .image-card { display:flex; flex-direction:column; padding:.55rem; }
+      .image-card .preview { height:calc(var(--thumb) + 16px); min-height:108px; }
+      .image-card img { width:var(--thumb); height:var(--thumb); max-width:100%; object-fit:contain; }
+      .image-card__top { display:flex; justify-content:space-between; gap:.3rem; align-items:baseline; margin-bottom:.45rem; }
+      .image-card__rank { color:var(--muted); font-size:.7rem; font-variant-numeric:tabular-nums; }
+      .image-card__name { display:block; margin-top:.5rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:.84rem; font-weight:750; }
+      .image-card__kind { margin:.18rem 0 .5rem; color:var(--muted); font-size:.68rem; }
+      .image-card__path { margin-top:auto; overflow-wrap:anywhere; color:var(--muted); font-size:.64rem; line-height:1.35; }
+      .image-card__foot { display:flex; gap:.35rem; margin-top:.6rem; }
+      .image-card__foot .button { flex:1; min-width:0; min-height:2rem; padding:.3rem; font-size:.7rem; }
+      .more-wrap { display:flex; justify-content:center; margin:1.4rem 0; }
+      .generation-gallery { display:grid; gap:.85rem; }
+      .generation-panel { padding:1rem; border:1px solid var(--line); border-radius:.95rem; background:var(--surface); }
+      .generation-panel__head { display:flex; align-items:center; justify-content:space-between; gap:1rem; margin-bottom:.8rem; }
+      .generation-panel__head p { margin:.2rem 0 0; color:var(--muted); font-size:.75rem; font-variant-numeric:tabular-nums; }
+      .generation-strip { display:grid; grid-template-columns:repeat(8,minmax(0,1fr)); gap:.55rem; }
+      .generation-sample { min-width:0; padding:.4rem; border:1px solid #e3eaf0; border-radius:.7rem; color:var(--ink); text-align:center; text-decoration:none; }
+      .generation-sample:hover { border-color:var(--red); }
+      .generation-sample img { display:block; width:100%; height:82px; object-fit:contain; }
+      .generation-sample strong { display:block; overflow:hidden; margin-top:.2rem; font-size:.73rem; text-overflow:ellipsis; white-space:nowrap; }
+      .generation-sample span { display:block; margin-top:.15rem; color:var(--muted); font-size:.67rem; font-variant-numeric:tabular-nums; }
+      .compare { padding:1rem; border:1px solid var(--line); border-radius:1rem; background:#fff; }
+      .compare-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:.65rem; margin-top:1rem; }
+      .compare-card { padding:.55rem; }
+      .compare-card .feature-stage { grid-template-columns:1fr 1fr; }
+      .compare-card .preview--large { height:160px; }
+      .compare-card .preview--large img { width:140px; height:140px; }
+      .compare-card .button { margin-top:.55rem; }
+      .summary-table { width:100%; border-collapse:collapse; font-size:.8rem; }
+      .summary-table th,.summary-table td { padding:.55rem; border-bottom:1px solid #e8edf0; text-align:right; font-variant-numeric:tabular-nums; }
+      .summary-table th:first-child,.summary-table td:first-child { text-align:left; }
+      .summary-table th { color:var(--muted); font-weight:700; }
+      .notice { color:var(--muted); font-size:.75rem; line-height:1.6; }
+      @media (max-width:1050px) { .feature-grid,.compare-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .catalog-grid { grid-template-columns:repeat(4,minmax(0,1fr)); } .generation-strip { grid-template-columns:repeat(4,minmax(0,1fr)); } .controls { grid-template-columns:repeat(3,minmax(0,1fr)); } .field--search { grid-column:span 3; } }
+      @media (max-width:620px) { main { padding:1.5rem .85rem 4rem; } .hero { align-items:start; flex-direction:column; gap:1rem; } .stats { grid-template-columns:repeat(2,minmax(0,1fr)); margin:1.5rem 0 2rem; } .stat strong { font-size:1.25rem; } .feature-grid,.compare-grid,.catalog-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .feature-stage,.compare-card .feature-stage { grid-template-columns:1fr; } .preview--large { height:180px; } .feature-card { padding:.5rem; } .generation-panel { padding:.65rem; } .generation-panel__head { align-items:start; flex-direction:column; gap:.5rem; } .generation-sample img { height:64px; } .controls { grid-template-columns:repeat(2,minmax(0,1fr)); } .field--search { grid-column:span 2; } .toolbar { top:0; } .image-card__foot { flex-direction:column; } .file-row { grid-template-columns:1fr auto; } .file-row a { grid-column:2; } }
+      @media (prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="/zh-Hans/pokemon"><span class="brand-mark">宝</span><span>Pokédex <span class="muted small">/ 图片审阅</span></span></a>
+      <a class="topbar-link" href="/zh-Hans/pokemon">返回图鉴</a>
+    </header>
+    <main>
+      <div class="hero">
+        <div>
+          <p class="eyebrow">本地媒体卷 · 文件实测</p>
+          <h1>图片体积对照</h1>
+          <p class="lede">先看妙蛙花在首页卡片约 92px 的实际效果，再浏览全部图片。下方“世代”按物种首次登场世代分组，不是该宝可梦在历代游戏中的图片版本。文件大小按卷内字节数排序；页面只加载看得到的预览图。</p>
+        </div>
+        <div class="hero-actions">
+          <a class="button button--red" href="./all-images-by-size.csv" download>下载全部排序 CSV</a>
+          <a class="button" href="./venusaur-images-by-size.csv" download>下载妙蛙花 CSV</a>
+        </div>
+      </div>
+      <div class="stats" id="stats" aria-live="polite"><div class="stat">正在读取图片清单…</div></div>
+      <p class="notice" id="snapshot"></p>
+
+      <section class="section" aria-labelledby="venusaur-title">
+        <div class="section-head"><div><h2 id="venusaur-title">妙蛙花 · 本体</h2><p>四种图片效果，按大小排列；相同图片在卷里分别关联宝可梦与形态记录。</p></div><span class="section-index">01 / 单独对照</span></div>
+        <div class="feature-grid" id="venusaur-base"></div>
+        <details><summary>查看妙蛙花本体的 8 个源文件</summary><div class="details-body" id="venusaur-files"></div></details>
+        <details><summary>查看超级妙蛙花与超极巨化妙蛙花</summary><div class="details-body"><p class="notice">这些属于不同形态，保留在完整排序清单中；此处也可直接比较。</p><div class="feature-grid" id="venusaur-variants"></div></div></details>
+      </section>
+
+      <section class="section compare" id="compare-section" hidden aria-labelledby="compare-title">
+        <div class="section-head"><div><h2 id="compare-title">你选中的图片</h2><p>最多并排对比 4 张；左侧是首页约 92px，右侧是放大预览。</p></div><button class="button" id="clear-compare" type="button">清空对比</button></div>
+        <div class="compare-grid" id="compare-grid"></div>
+      </section>
+
+      <section class="section" aria-labelledby="generation-gallery-title">
+        <div class="section-head"><div><h2 id="generation-gallery-title">按首次登场世代预览</h2><p>每代展示最早登场的 8 只宝可梦当前的官方绘图；这里尚未收录历代游戏版本图片。点击图片看原图，点击按钮查看同组全部文件。</p></div><span class="section-index">02 / 物种分组</span></div>
+        <div class="generation-gallery" id="generation-gallery"></div>
+      </section>
+
+      <section class="section" id="catalog-section" aria-labelledby="catalog-title">
+        <div class="section-head"><div><h2 id="catalog-title">全部图片</h2><p>包含宝可梦本体与形态文件。排序始终按实际文件大小，不按像素尺寸。</p></div><span class="section-index">03 / 完整清单</span></div>
+        <div class="toolbar">
+          <div class="controls">
+            <label class="field field--search">搜索中文名、英文名、编号或路径<input id="search" type="search" placeholder="例如：妙蛙花、venusaur、25" autocomplete="off" /></label>
+            <label class="field">首次登场世代<select id="generation"><option value="all">全部世代</option></select></label>
+            <label class="field">图片类型<select id="kind"><option value="all">全部类型</option></select></label>
+            <label class="field">所属记录<select id="owner"><option value="all">全部</option><option value="pokemon">宝可梦</option><option value="form">形态</option></select></label>
+            <label class="field">大小排序<select id="sort"><option value="desc">从大到小</option><option value="asc">从小到大</option></select></label>
+          </div>
+          <div class="toolbar-bottom"><label>预览尺寸 <input id="preview-size" type="range" min="72" max="184" value="92" /><output id="preview-size-value">92px</output></label><span class="notice">点击“加入对比”可并排看首页尺寸与放大效果</span></div>
+        </div>
+        <div class="result-line"><span id="result-count" aria-live="polite"></span><span id="shown-count"></span></div>
+        <div class="catalog-grid" id="catalog-grid"></div>
+        <div class="more-wrap"><button class="button button--red" id="show-more" type="button">继续显示 96 张</button></div>
+      </section>
+
+      <section class="section" aria-labelledby="generation-title">
+        <div class="section-head"><div><h2 id="generation-title">按首次登场世代统计</h2><p>统计包括本体与形态图片；同内容的两份文件分别计入占用。这里不是各游戏版本图片的占用。</p></div><span class="section-index">04 / 卷内汇总</span></div>
+        <details><summary>展开各世代文件数量与总体积</summary><div class="details-body"><table class="summary-table"><thead><tr><th>世代</th><th>文件</th><th>总体积</th></tr></thead><tbody id="generation-totals"></tbody></table></div></details>
+        <p class="notice">这些是文件体积，不等于实际加载时间。加载还受浏览器缓存、网络与同时请求数量影响。当前图鉴卡片优先使用官方绘图，并对可视区域外的图片延迟加载。</p>
+      </section>
+    </main>
+    <script>
+      const $ = (selector) => document.querySelector(selector)
+      const html = (value) => String(value ?? '').replace(/[&<>"']/g, (char) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' })[char])
+      const formatSize = (bytes) => bytes < 1024 ? `${bytes} B` : `${(bytes / 1024).toFixed(1)} KiB`
+      const imageUrl = (item) => `/media/${encodeURI(item.path)}`
+      const kindNames = { 'official-artwork':'官方绘图', 'front-default':'正面图', 'front-shiny':'闪光正面图', home:'HOME 图' }
+      const ownerName = (item) => item.ownerName || item.pokemonName || item.speciesName || item.path
+      let all = []
+      let filtered = []
+      let shown = 96
+      const compare = []
+
+      function featureCard(item, sameFiles) {
+        const label = kindNames[item.kind] || item.kind
+        return `<article class="feature-card">
+          <div class="feature-stage">
+            <div><div class="preview preview--small"><img src="${imageUrl(item)}" alt="${html(label)}，首页大小" /></div><p class="preview-label">首页约 92px</p></div>
+            <div><div class="preview preview--large"><img src="${imageUrl(item)}" alt="${html(label)}，放大预览" /></div><p class="preview-label">放大 184px</p></div>
+          </div>
+          <div class="feature-meta"><strong>${html(label)}</strong><span class="size">${formatSize(item.bytes)}</span></div>
+          <p class="muted small">原图 ${item.width} × ${item.height}px · ${sameFiles.length} 份同内容文件</p>
+          <div class="feature-actions"><button class="button compare-add" data-id="${item.id}" type="button">加入对比</button><a class="button" href="${imageUrl(item)}" target="_blank" rel="noopener">查看原图</a></div>
+        </article>`
+      }
+
+      function renderVenusaur() {
+        const venusaur = all.filter((item) => item.speciesId === 3)
+        const base = venusaur.filter((item) => item.pokemonId === 3 || (item.formId === 3))
+        const variants = venusaur.filter((item) => !base.includes(item))
+        function uniqueGroups(items) {
+          const groups = new Map()
+          for (const item of items) {
+            const key = `${item.kind}:${item.checksum || item.path}`
+            if (!groups.has(key)) groups.set(key, [])
+            groups.get(key).push(item)
+          }
+          return [...groups.values()].sort((a, b) => b[0].bytes - a[0].bytes)
+        }
+        $('#venusaur-base').innerHTML = uniqueGroups(base).map((items) => featureCard(items[0], items)).join('')
+        $('#venusaur-variants').innerHTML = uniqueGroups(variants).map((items) => featureCard(items[0], items)).join('')
+        $('#venusaur-files').innerHTML = base.map((item) => `<div class="file-row"><code>${html(item.path)}</code><span class="size">${formatSize(item.bytes)}</span><a href="${imageUrl(item)}" target="_blank" rel="noopener">打开</a></div>`).join('')
+      }
+
+      function renderStats() {
+        const total = all.reduce((sum, item) => sum + item.bytes, 0)
+        const distinct = new Set(all.map((item) => item.checksum || item.path)).size
+        const biggest = all[0]?.bytes || 0
+        const smallest = all.at(-1)?.bytes || 0
+        $('#stats').innerHTML = `<div class="stat"><strong>${all.length.toLocaleString()}</strong><span>卷内图片文件</span></div><div class="stat"><strong>${(total / 1024 / 1024).toFixed(1)} MiB</strong><span>合计文件体积</span></div><div class="stat"><strong>${distinct.toLocaleString()}</strong><span>不同内容的图片</span></div><div class="stat"><strong>${formatSize(smallest)} – ${formatSize(biggest)}</strong><span>单张文件范围</span></div>`
+        const totals = new Map()
+        for (const item of all) {
+          const group = totals.get(item.generation) || { count:0, bytes:0 }
+          group.count++
+          group.bytes += item.bytes
+          totals.set(item.generation, group)
+        }
+        $('#generation-totals').innerHTML = [...totals.entries()].sort((a,b) => a[0]-b[0]).map(([generation, group]) => `<tr><td>第 ${generation} 世代</td><td>${group.count.toLocaleString()}</td><td>${(group.bytes / 1024 / 1024).toFixed(1)} MiB</td></tr>`).join('')
+      }
+
+      function renderGenerations() {
+        const generations = [...new Set(all.map((item) => item.generation))].sort((a, b) => a - b)
+        $('#generation-gallery').innerHTML = generations.map((generation) => {
+          const files = all.filter((item) => item.generation === generation)
+          const samples = files
+            .filter((item) => item.kind === 'official-artwork' && item.pokemonId === item.speciesId)
+            .sort((a, b) => a.speciesId - b.speciesId)
+            .slice(0, 8)
+          const totalBytes = files.reduce((sum, item) => sum + item.bytes, 0)
+          return `<article class="generation-panel" data-generation="${generation}">
+            <div class="generation-panel__head"><div><h3>第 ${generation} 世代首次登场</h3><p>${files.length.toLocaleString()} 张文件 · ${(totalBytes / 1024 / 1024).toFixed(1)} MiB</p></div><button class="button generation-open" data-generation="${generation}" type="button">查看同组全部图片 ↓</button></div>
+            <div class="generation-strip">${samples.map((item) => `<a class="generation-sample" href="${imageUrl(item)}" target="_blank" rel="noopener" title="${html(item.chineseName || item.speciesName)} · ${formatSize(item.bytes)} · ${item.width} × ${item.height}px"><img src="${imageUrl(item)}" alt="${html(item.chineseName || item.speciesName)}，第 ${generation} 世代官方绘图" loading="lazy" decoding="async" /><strong>${html(item.chineseName || item.speciesName)}</strong><span>${formatSize(item.bytes)}</span></a>`).join('')}</div>
+          </article>`
+        }).join('')
+      }
+
+      function readFilters() {
+        const query = $('#search').value.trim().toLowerCase()
+        const generation = $('#generation').value
+        const kind = $('#kind').value
+        const owner = $('#owner').value
+        filtered = all.filter((item) => {
+          if (generation !== 'all' && String(item.generation) !== generation) return false
+          if (kind !== 'all' && item.kind !== kind) return false
+          if (owner === 'pokemon' && !item.pokemonId) return false
+          if (owner === 'form' && !item.formId) return false
+          if (!query) return true
+          return [item.chineseName,item.speciesName,item.pokemonName,item.ownerName,item.speciesId,item.pokemonId,item.formId,item.path].some((value) => String(value ?? '').toLowerCase().includes(query))
+        })
+        if ($('#sort').value === 'asc') filtered.reverse()
+        shown = 96
+        renderCatalog()
+      }
+
+      function catalogCard(item, rank) {
+        return `<article class="image-card">
+          <div class="image-card__top"><span class="image-card__rank">#${rank.toLocaleString()}</span><span class="size small">${formatSize(item.bytes)}</span></div>
+          <div class="preview"><img src="${imageUrl(item)}" alt="${html(item.chineseName || item.speciesName)} ${html(kindNames[item.kind] || item.kind)}" loading="lazy" decoding="async" /></div>
+          <span class="image-card__name" title="${html(item.ownerName)}">${html(item.chineseName || item.speciesName)}${item.ownerName !== item.speciesName ? ` · ${html(ownerName(item))}` : ''}</span>
+          <p class="image-card__kind">${html(kindNames[item.kind] || item.kind)} · ${item.width} × ${item.height}px · 第 ${item.generation} 世代</p>
+          <code class="image-card__path">${html(item.path)}</code>
+          <div class="image-card__foot"><button class="button compare-add" data-id="${item.id}" type="button">加入对比</button><a class="button" href="${imageUrl(item)}" target="_blank" rel="noopener">原图</a></div>
+        </article>`
+      }
+
+      function renderCatalog() {
+        const visible = filtered.slice(0, shown)
+        $('#catalog-grid').innerHTML = visible.map((item, index) => catalogCard(item, index + 1)).join('')
+        updateCatalogCount()
+      }
+
+      function updateCatalogCount() {
+        $('#result-count').textContent = `筛选后 ${filtered.length.toLocaleString()} 张 · ${$('#sort').value === 'desc' ? '由大到小' : '由小到大'}`
+        $('#shown-count').textContent = `当前显示 ${Math.min(shown, filtered.length).toLocaleString()} 张`
+        $('#show-more').hidden = shown >= filtered.length
+      }
+
+      function renderCompare() {
+        $('#compare-section').hidden = compare.length === 0
+        $('#compare-grid').innerHTML = compare.map((item) => `<article class="compare-card">
+          <div class="feature-stage"><div class="preview preview--small"><img src="${imageUrl(item)}" alt="首页尺寸" /></div><div class="preview preview--large"><img src="${imageUrl(item)}" alt="放大预览" /></div></div>
+          <p class="small"><strong>${html(item.chineseName || item.speciesName)}</strong> · ${html(kindNames[item.kind] || item.kind)}<br /><span class="size">${formatSize(item.bytes)}</span> · ${item.width} × ${item.height}px</p>
+          <button class="button compare-remove" data-id="${item.id}" type="button">移出对比</button>
+        </article>`).join('')
+      }
+
+      document.addEventListener('click', (event) => {
+        const add = event.target.closest('.compare-add')
+        const remove = event.target.closest('.compare-remove')
+        const generationOpen = event.target.closest('.generation-open')
+        if (generationOpen) {
+          $('#search').value = ''
+          $('#generation').value = generationOpen.dataset.generation
+          $('#kind').value = 'all'
+          $('#owner').value = 'all'
+          readFilters()
+          $('#catalog-section').scrollIntoView({ behavior:'smooth', block:'start' })
+        }
+        if (add) {
+          const item = all.find((candidate) => candidate.id === Number(add.dataset.id))
+          if (!item || compare.some((candidate) => candidate.id === item.id)) return
+          if (compare.length >= 4) { alert('最多同时对比 4 张图片。'); return }
+          compare.push(item)
+          renderCompare()
+          $('#compare-section').scrollIntoView({ behavior:'smooth', block:'start' })
+        }
+        if (remove) {
+          const index = compare.findIndex((item) => item.id === Number(remove.dataset.id))
+          if (index >= 0) compare.splice(index, 1)
+          renderCompare()
+        }
+      })
+      $('#clear-compare').addEventListener('click', () => { compare.length = 0; renderCompare() })
+      $('#show-more').addEventListener('click', () => {
+        const start = shown
+        shown += 96
+        $('#catalog-grid').insertAdjacentHTML('beforeend', filtered.slice(start, shown).map((item, index) => catalogCard(item, start + index + 1)).join(''))
+        updateCatalogCount()
+      })
+      for (const id of ['search','generation','kind','owner','sort']) $('#'+id).addEventListener(id === 'search' ? 'input' : 'change', readFilters)
+      $('#preview-size').addEventListener('input', (event) => { document.documentElement.style.setProperty('--thumb', `${event.target.value}px`); $('#preview-size-value').textContent = `${event.target.value}px` })
+
+      fetch('./data.json')
+        .then((response) => { if (!response.ok) throw new Error(`HTTP ${response.status}`); return response.json() })
+        .then((data) => {
+          all = data.images
+          if (all.length !== data.count || data.missingPaths.length) throw new Error('图片清单不完整')
+          $('#snapshot').textContent = `清单快照：${new Date(data.generatedAt).toLocaleString('zh-CN')}。媒体卷更新后可重新导出。`
+          $('#generation').insertAdjacentHTML('beforeend', [...new Set(all.map((item) => item.generation))].sort((a,b) => a-b).map((value) => `<option value="${value}">第 ${value} 世代</option>`).join(''))
+          $('#kind').insertAdjacentHTML('beforeend', [...new Set(all.map((item) => item.kind))].map((value) => `<option value="${html(value)}">${html(kindNames[value] || value)}</option>`).join(''))
+          renderStats(); renderVenusaur(); renderGenerations(); readFilters()
+        })
+        .catch((error) => { $('#stats').innerHTML = `<div class="stat">清单读取失败：${html(error.message)}。请在 3000 开发端口打开此页面，并保持 8080 后端运行。</div>` })
+    </script>
+  </body>
+</html>

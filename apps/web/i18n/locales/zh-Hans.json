@@ -1,0 +1,81 @@
+{
+  "app": {
+    "subtitle": "宝可梦资料图鉴",
+    "attribution": "数据由 PokeAPI 提供。Pokémon 及相关名称为 Nintendo、Creatures Inc. 和 GAME FREAK inc. 的商标。"
+  },
+  "nav": {
+    "pokemon": "宝可梦",
+    "types": "属性"
+  },
+  "home": {
+    "eyebrow": "本地镜像 · 中文优先",
+    "title": "探索宝可梦世界",
+    "description": "搜索编号、名称、属性与世代，查看形态、特性、种族值和完整进化链。",
+    "searchPlaceholder": "输入皮卡丘、Pikachu 或 25",
+    "search": "搜索图鉴",
+    "browse": "浏览全部宝可梦",
+    "featured": "快看这些宝可梦"
+  },
+  "filters": {
+    "title": "筛选图鉴",
+    "searchPlaceholder": "名称或编号",
+    "allTypes": "全部属性",
+    "allGenerations": "全部世代",
+    "sort": "排序",
+    "sortId": "图鉴编号",
+    "sortName": "英文名称",
+    "sortBaseExperience": "基础经验",
+    "sortNewest": "最新同步",
+    "apply": "筛选",
+    "clear": "清除",
+    "more": "更多",
+    "less": "收起",
+    "legendary": "传说的宝可梦",
+    "mythical": "幻之宝可梦",
+    "results": "共 {count} 条结果",
+    "allShown": "已显示全部",
+    "loadingRemaining": "已显示 {count} / {total}，正在继续加载",
+    "partialShown": "已显示 {count} / {total}"
+  },
+  "pokemon": {
+    "back": "返回图鉴",
+    "close": "关闭详情",
+    "selected": "已选中",
+    "fullPage": "查看完整页面",
+    "legendaryShort": "传说",
+    "mythicalShort": "幻之",
+    "description": "图鉴描述",
+    "stats": "种族值",
+    "abilities": "特性",
+    "evolution": "进化链",
+    "forms": "形态",
+    "media": "图片",
+    "hiddenAbility": "隐藏特性",
+    "height": "身高",
+    "weight": "体重",
+    "baseExperience": "基础经验",
+    "notFound": "没有找到这个宝可梦"
+  },
+  "types": {
+    "title": "属性图鉴",
+    "description": "查看属性之间的克制、抵抗与免疫关系。",
+    "effectiveness": "属性关系",
+    "double_damage_to": "攻击时造成 2 倍伤害",
+    "half_damage_to": "攻击时造成 0.5 倍伤害",
+    "no_damage_to": "攻击时无效",
+    "double_damage_from": "受到 2 倍伤害",
+    "half_damage_from": "受到 0.5 倍伤害",
+    "no_damage_from": "免疫"
+  },
+  "common": {
+    "loading": "加载中…",
+    "loadingAll": "正在加载全部结果",
+    "loadingPage": "正在加载第 {page} 页",
+    "error": "加载失败，请稍后重试。",
+    "retry": "请重试",
+    "previous": "上一页",
+    "next": "下一页",
+    "page": "第 {page} / {total} 页",
+    "empty": "暂无数据"
+  }
+}

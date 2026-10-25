@@ -1,0 +1,97 @@
+services:
+  db:
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-pokedex}
+      POSTGRES_USER: ${POSTGRES_USER:-pokedex}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-pokedex}
+    volumes:
+      - pokedex_postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-pokedex} -d $${POSTGRES_DB:-pokedex}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+
+  api:
+    build:
+      context: ./apps/api
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-postgresql+asyncpg://pokedex:pokedex@db:5432/pokedex}
+      POKEAPI_BASE_URL: ${POKEAPI_BASE_URL:-https://pokeapi.co/api/v2}
+      POKEAPI_USER_AGENT: ${POKEAPI_USER_AGENT:-pokedex-local/0.1}
+      SYNC_CONCURRENCY: ${SYNC_CONCURRENCY:-4}
+      MEDIA_ROOT: /app/media
+      MEDIA_PUBLIC_PATH: /media
+    volumes:
+      - pokedex_media:/app/media
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  scheduler:
+    build:
+      context: ./apps/api
+    command: ["python", "-m", "pokedex_api.sync.scheduler"]
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-postgresql+asyncpg://pokedex:pokedex@db:5432/pokedex}
+      POKEAPI_BASE_URL: ${POKEAPI_BASE_URL:-https://pokeapi.co/api/v2}
+      POKEAPI_USER_AGENT: ${POKEAPI_USER_AGENT:-pokedex-local/0.1}
+      SYNC_CONCURRENCY: ${SYNC_CONCURRENCY:-4}
+      MEDIA_ROOT: /app/media
+      MEDIA_PUBLIC_PATH: /media
+    volumes:
+      - pokedex_media:/app/media
+    depends_on:
+      api:
+        condition: service_started
+    restart: unless-stopped
+
+  media-sync:
+    build:
+      context: ./apps/api
+    command: ["python", "-m", "pokedex_api.sync", "--media-only"]
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-postgresql+asyncpg://pokedex:pokedex@db:5432/pokedex}
+      POKEAPI_BASE_URL: ${POKEAPI_BASE_URL:-https://pokeapi.co/api/v2}
+      POKEAPI_USER_AGENT: ${POKEAPI_USER_AGENT:-pokedex-local/0.1}
+      SYNC_CONCURRENCY: ${SYNC_CONCURRENCY:-4}
+      MEDIA_ROOT: /app/media
+      MEDIA_PUBLIC_PATH: /media
+    volumes:
+      - pokedex_media:/app/media
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
+
+  web:
+    build:
+      context: ./apps/web
+    environment:
+      NUXT_API_BASE: http://api:8000
+      NUXT_PUBLIC_API_BASE: /api
+      NUXT_PUBLIC_SITE_URL: ${NUXT_PUBLIC_SITE_URL:-http://localhost:8080}
+    depends_on:
+      api:
+        condition: service_started
+    restart: unless-stopped
+
+  caddy:
+    image: public.ecr.aws/docker/library/caddy:2-alpine
+    ports:
+      - "${APP_PORT:-8080}:80"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+    depends_on:
+      web:
+        condition: service_started
+      api:
+        condition: service_started
+    restart: unless-stopped
+
+volumes:
+  pokedex_postgres:
+  pokedex_media:

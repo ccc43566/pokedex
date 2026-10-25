@@ -1,0 +1,1 @@
+"""PokeAPI mirror package."""
