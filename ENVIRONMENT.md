@@ -18,7 +18,7 @@
 
 ## 项目目录与环境变量
 
-从 `.env.example` 复制到根目录 `.env`，自行设置密码，并让 `DATABASE_URL` 中的用户名、密码、数据库名与 `POSTGRES_USER`、`POSTGRES_PASSWORD`、`POSTGRES_DB` 一致。真实 `.env` 不在 Git 中，也不要提交到公开仓库。
+`pyproject.toml` 和 `uv.lock` 负责 Python 依赖，`apps/web/package.json` 和 `pnpm-lock.yaml` 负责前端依赖；它们不保存数据库口令或运行地址。**不必从原电脑搬运 `.env`**：在新电脑从 `.env.example` 生成根目录 `.env`，自行设置新密码，并让 `DATABASE_URL` 中的用户名、密码、数据库名与 `POSTGRES_USER`、`POSTGRES_PASSWORD`、`POSTGRES_DB` 一致。若密码有 URL 特殊字符，`DATABASE_URL` 中须正确编码。真实 `.env` 不在 Git 中，也不要提交到公开仓库。
 
 ```powershell
 Copy-Item .env.example .env
@@ -26,7 +26,7 @@ Copy-Item .env.example .env
 
 | 名称 | 来源／用途 |
 | --- | --- |
-| `POSTGRES_DB`、`POSTGRES_USER`、`POSTGRES_PASSWORD` | Compose 初始化 PostgreSQL。备份恢复到现有数据时，须与数据库内角色匹配。 |
+| `POSTGRES_DB`、`POSTGRES_USER`、`POSTGRES_PASSWORD` | Compose 初始化 PostgreSQL。按下文的 `pg_dump`／`pg_restore --no-owner --no-acl` 逻辑备份恢复到**新建空库**时，可以在新电脑使用新的用户、密码和数据库名；`DATABASE_URL` 必须与之匹配。若改用 Docker Hub 直接搬运原始数据库卷，则数据库已初始化，不能靠修改 `.env` 重设旧用户的密码。 |
 | `DATABASE_URL` | API／scheduler／media-sync 的 SQLAlchemy/asyncpg 连接串；Compose 网络中数据库主机为 `db`。本机直接跑 API 时需改为本机可访问的数据库地址。 |
 | `POKEAPI_BASE_URL`、`POKEAPI_USER_AGENT` | 后台同步访问 PokéAPI；浏览现有本地数据不需要在页面请求时访问上游。 |
 | `SYNC_CONCURRENCY` | 同步并发数。`SYNC_PAGE_SIZE` 也在 API 设置中，未出现在示例文件。 |
@@ -103,7 +103,7 @@ uv run mypy src
 
 ## Git 不带走的数据及备份／恢复示例
 
-原电脑的普通未跟踪文件检查结果为空；两份新文档提交后应再次检查。以下被忽略或在 Docker 卷中，必须按需求独立处理：根目录 `.env`；`pokedex_pokedex_postgres` 的数据库；`pokedex_pokedex_media` 的原始图片；可选的 `data/version-media/` 预览快照（1,351 个、约 181.3 MiB）。`data/media/` 在宿主机只有 `.gitkeep`，**不是**图片备份。`.venv`、`node_modules`、`.nuxt`、`.output` 和日志可重建或不影响运行。
+原电脑的普通未跟踪文件检查结果为空；两份新文档提交后应再次检查。以下被忽略或在 Docker 卷中，必须按需求独立处理：根目录 `.env` 可在新电脑从 `.env.example` 重建，不必复制；`pokedex_pokedex_postgres` 的数据库和 `pokedex_pokedex_media` 的原始图片若要保留现状则必须备份；可选的 `data/version-media/` 预览快照（1,351 个、约 181.3 MiB）可另存。`data/media/` 在宿主机只有 `.gitkeep`，**不是**图片备份。`.venv`、`node_modules`、`.nuxt`、`.output` 和日志可重建或不影响运行。
 
 两份文档推送后，新电脑可在 PowerShell 中克隆公开源码；数据库和图片备份需另行安全传输，不能仅靠这条命令：
 
@@ -128,7 +128,7 @@ docker run --rm -v pokedex_pokedex_media:/source:ro -v "${backupDir}:/backup" al
 $backupDir = 'D:\pokedex-transfer'
 docker compose -p pokedex up -d db
 docker cp "$backupDir\pokedex.dump" pokedex-db-1:/tmp/pokedex.dump
-docker compose -p pokedex exec -T db sh -c 'pg_restore --clean --if-exists --no-owner -U "$POSTGRES_USER" -d "$POSTGRES_DB" /tmp/pokedex.dump'
+docker compose -p pokedex exec -T db sh -c 'pg_restore --clean --if-exists --no-owner --no-acl -U "$POSTGRES_USER" -d "$POSTGRES_DB" /tmp/pokedex.dump'
 docker volume create pokedex_pokedex_media
 docker run --rm -v pokedex_pokedex_media:/target -v "${backupDir}:/backup:ro" alpine:3.20 tar -C /target -xf /backup/media.tar
 docker compose -p pokedex up -d --build api web caddy
@@ -140,6 +140,6 @@ docker compose -p pokedex up -d --build api web caddy
 
 普通的 `docker push` / `docker pull` 只搬运**镜像**，不会携带挂载的 PostgreSQL 或图片卷。[Docker 官方说明](https://docs.docker.com/desktop/settings-and-maintenance/backup-and-restore/)明确要求卷数据单独备份。不过，Docker Desktop 的 **Volumes → 卷名 → Exports → Quick export → Registry** 可把卷内容导出为 Docker Hub 上的镜像；新电脑在 **Volumes → 卷名 → Import → Registry** 导入。详见 [Docker Desktop 卷导出／导入文档](https://docs.docker.com/desktop/use-desktop/volumes/)。
 
-若选这个图形界面方法，分别处理 `pokedex_pokedex_postgres` 和 `pokedex_pokedex_media`，使用**私有** Docker Hub 仓库；数据库卷含现有数据，图片卷约 7.9 GB，上传／下载会耗时且需确认账号容量。先停止项目服务并确认无写入，导出后在新电脑**启动数据库前**导入到空的同名卷，再启动 `db api web caddy`。导入会替换目标卷已有内容；不要导入到已有重要数据的卷。根目录 `.env` 仍需通过安全渠道单独传输。数据库跨机器迁移仍以本节上方的 `pg_dump`／`pg_restore` 逻辑备份方式更便于核验；Docker Hub 导出卷可作为在线传输的备选，并应在新电脑验证数据与图片。
+若选这个图形界面方法，分别处理 `pokedex_pokedex_postgres` 和 `pokedex_pokedex_media`，使用**私有** Docker Hub 仓库；数据库卷含现有数据，图片卷约 7.9 GB，上传／下载会耗时且需确认账号容量。先停止项目服务并确认无写入，导出后在新电脑**启动数据库前**导入到空的同名卷，再启动 `db api web caddy`。导入会替换目标卷已有内容；不要导入到已有重要数据的卷。原始数据库卷保留旧用户和密码，不能仅靠新 `.env` 修改它们；若要换新密码，使用上文的逻辑备份恢复方式。数据库跨机器迁移仍以 `pg_dump`／`pg_restore` 更便于核验；Docker Hub 导出卷可作为在线传输的备选，并应在新电脑验证数据与图片。
 
 外部服务：PokéAPI 是未来同步的数据源；GitHub 保存公开源码；Docker 镜像仓库和 Python/npm 软件源只在拉镜像／安装依赖时使用。现有 Compose 没有配置云数据库、对象存储或公网域名；若以后要公网部署，域名、HTTPS、备份周期和可用资源尚待决定。

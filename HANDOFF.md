@@ -68,7 +68,7 @@
 
 ## 下一步具体操作
 
-1. 在原电脑确认 `git status` 仅有预期文档变更；将两份文档提交并推送。把 `.env`、数据库逻辑备份和媒体卷备份存到 **GitHub 之外** 的安全位置；若需要保留旧 API 开发预览，再带上 `data/version-media/`。
+1. 在原电脑确认 `git status` 仅有预期文档变更；将两份文档提交并推送。把数据库逻辑备份和媒体卷备份存到 **GitHub 之外** 的安全位置；`.env` 可在新电脑从 `.env.example` 重新生成，不必搬运旧文件。若需要保留旧 API 开发预览，再带上 `data/version-media/`。
 2. 在新电脑按 `ENVIRONMENT.md` 安装 Git 与 Docker Desktop，克隆仓库；若要原样开发前端，再配置 Node 24、pnpm 11.19.0；本地开发 API 才需 Python 3.13 和 uv。
 3. 准备新电脑 `.env`。恢复数据库与媒体卷后，只启动 `db api web caddy`；不要启动 `scheduler` 或 `media-sync`。备份／恢复示例和校验命令见 `ENVIRONMENT.md`。
 4. 检查 `http://localhost:8080/api/v1/health`、中文图鉴、图片和妙蛙种子的历代画廊，再打开 3000 开发预览。运行类型检查、构建、后端测试和必要的浏览器检查。
