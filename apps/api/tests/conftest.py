@@ -13,6 +13,7 @@ from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.pool import StaticPool
 
+from pokedex_api import reference_models  # noqa: F401
 from pokedex_api.db import get_session
 from pokedex_api.main import app
 from pokedex_api.models import Base

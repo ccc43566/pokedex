@@ -1,306 +1,236 @@
 <script setup lang="ts">
-import type { GenerationSummary, PaginatedPokemon, TypeSummary } from '~/types/api'
-import { onBeforeRouteUpdate } from 'vue-router'
-import {
-  pokemonListCache,
-  pokemonListKey,
-  pokemonListQuery,
-  type PokemonListQuery,
-} from '~/utils/pokemonListCache'
+import type { PaginatedPokemon, TypeSummary } from '~/types/api'
+import { generationCatalog } from '~/utils/generationCatalog'
+import { hasPokemonFilters, pokemonListKey, pokemonListQuery } from '~/utils/pokemonListCache'
+import { saveBrowsePosition } from '~/utils/detailNavigation'
 
 const { t, locale } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const localePath = useLocalePath()
 const { fetchApi } = usePokedexApi()
-const toast = useToast()
 const allFilters = '__all__'
-const batchSize = 100 // The current API caps pageSize at 100.
 const filterAnchor = ref<HTMLElement | null>(null)
+const filterForm = ref<HTMLFormElement | null>(null)
 const filterStuck = ref(false)
 const filtersExpanded = ref(false)
-
-const filters = reactive({
-  q: String(route.query.q || ''),
-  type: String(route.query.type || allFilters),
-  generation: String(route.query.generation || allFilters),
-  sort: String(route.query.sort || 'id'),
-  legendary: route.query.isLegendary === 'true',
-  mythical: route.query.isMythical === 'true',
-})
-
-async function fetchAllPokemon(
-  query: PokemonListQuery,
-  initial?: PaginatedPokemon,
-): Promise<PaginatedPokemon> {
-  const first =
-    initial ||
-    (await fetchApi<PaginatedPokemon>('/pokemon', {
-      params: { ...query, page: 1, pageSize: batchSize },
-    }))
-  if (first.totalPages <= 1)
-    return { ...first, pageSize: first.total, totalPages: 1, hasNext: false }
-
-  const pages: PaginatedPokemon[] = Array(first.totalPages)
-  pages[0] = first
-  let nextPage = 2
-  await Promise.all(
-    Array.from({ length: Math.min(4, first.totalPages - 1) }, async () => {
-      while (nextPage <= first.totalPages) {
-        const page = nextPage++
-        pages[page - 1] = await fetchApi<PaginatedPokemon>('/pokemon', {
-          params: { ...query, page, pageSize: batchSize },
-        })
-      }
-    }),
-  )
-  return {
-    ...first,
-    items: pages.flatMap((batch) => batch.items),
-    page: 1,
-    pageSize: first.total,
-    totalPages: 1,
-    hasNext: false,
-    hasPrevious: false,
-  }
-}
-
-const initialQuery = pokemonListQuery(route.query, locale.value)
-const initialKey = pokemonListKey(initialQuery)
-const {
-  data: initialData,
-  pending,
-  error,
-} = await useAsyncData(`pokemon-first-${initialKey}`, () =>
-  fetchApi<PaginatedPokemon>('/pokemon', {
-    params: { ...initialQuery, page: 1, pageSize: batchSize },
-  }),
-)
-const data = shallowRef<PaginatedPokemon | null>(null)
 const hydrated = ref(false)
-const loadingAll = ref(Boolean(initialData.value && initialData.value.totalPages > 1))
-const loadError = ref(false)
-const displayedKey = ref(initialKey)
-const navigating = ref(false)
-
-function localeForPath(path: string): string {
-  return path === '/en' || path.startsWith('/en/') ? 'en' : 'zh-Hans'
-}
-
-function appliedQuery(): PokemonListQuery {
-  return pokemonListQuery(route.query, locale.value)
-}
-
-function syncDraft(query: PokemonListQuery) {
+const submitting = ref(false)
+const filterHeight = ref(130)
+const openGeneration = useState<number | null>('pokemon-open-generation', () => null)
+const animateGeneration = ref<number | null>(null)
+const applied = computed(() => pokemonListQuery(route.query, locale.value))
+const filtered = computed(() => hasPokemonFilters(applied.value))
+const activeQuery = computed(() =>
+  filtered.value
+    ? applied.value
+    : openGeneration.value
+      ? { locale: locale.value, sort: 'id', generation: openGeneration.value }
+      : null,
+)
+const filters = reactive({
+  q: '',
+  type: allFilters,
+  legendary: false,
+  mythical: false,
+  mega: false,
+  gigantamax: false,
+})
+function syncDraft() {
+  const query = applied.value
   filters.q = query.q || ''
   filters.type = query.type || allFilters
-  filters.generation = query.generation ? String(query.generation) : allFilters
-  filters.sort = query.sort
   filters.legendary = Boolean(query.isLegendary)
   filters.mythical = Boolean(query.isMythical)
+  filters.mega = Boolean(query.isMega)
+  filters.gigantamax = Boolean(query.isGigantamax)
 }
+syncDraft()
+watch(() => pokemonListKey(applied.value), syncDraft)
 
-function loadList(query: PokemonListQuery): Promise<PaginatedPokemon> {
-  const initial = pokemonListKey(query) === initialKey ? initialData.value || undefined : undefined
-  return pokemonListCache.load(pokemonListKey(query), () => fetchAllPokemon(query, initial))
-}
-
-async function loadInitialList() {
-  if (!initialData.value || data.value?.items.length === data.value?.total) return
-  loadingAll.value = true
-  loadError.value = false
-  try {
-    const list = await loadList(initialQuery)
-    if (pokemonListKey(appliedQuery()) === initialKey) data.value = list
-  } catch {
-    if (pokemonListKey(appliedQuery()) === initialKey) loadError.value = true
-  } finally {
-    loadingAll.value = false
-  }
-}
-
-function updateFilterPosition() {
-  const anchorTop = filterAnchor.value?.getBoundingClientRect().top
-  const headerBottom = document.querySelector('header')?.getBoundingClientRect().bottom || 68
-  filterStuck.value = anchorTop !== undefined && anchorTop <= headerBottom
-}
-
-onMounted(() => {
-  hydrated.value = true
-  data.value = initialData.value
-  if (data.value && !loadingAll.value) pokemonListCache.set(initialKey, data.value)
-  void loadInitialList()
-  if (route.query.page) {
-    void router.replace({ path: route.path, query: { ...route.query, page: undefined } })
-  }
-  updateFilterPosition()
-  window.addEventListener('scroll', updateFilterPosition, { passive: true })
-})
-onUnmounted(() => window.removeEventListener('scroll', updateFilterPosition))
-
-onBeforeRouteUpdate(async (to) => {
-  const target = pokemonListQuery(to.query, localeForPath(to.path))
-  const key = pokemonListKey(target)
-  if (key === displayedKey.value || pokemonListCache.get(key)) return
-  const loadingToast = toast.add({
-    title: t('common.loadingAll'),
-    duration: 120000,
-  })
-  try {
-    await loadList(target)
-  } catch {
-    toast.add({ title: t('common.error'), description: t('common.retry'), color: 'error' })
-    return false
-  } finally {
-    toast.remove(loadingToast.id)
-  }
-})
-
-watch(
-  () => route.fullPath,
-  () => {
-    const query = appliedQuery()
-    const key = pokemonListKey(query)
-    if (key !== displayedKey.value) {
-      const next = pokemonListCache.get(key)
-      if (next) {
-        data.value = next
-        displayedKey.value = key
-      }
-      syncDraft(query)
-    }
-  },
-  { flush: 'sync' },
+// A fresh directory has no list request, on either the server or the client.
+const firstQuery = activeQuery.value
+const { data: initial } = await useAsyncData(
+  `pokemon-first-batch-${firstQuery ? pokemonListKey(firstQuery) : 'directory'}`,
+  async () => ({
+    list: firstQuery
+      ? await fetchApi<PaginatedPokemon>('/pokemon', {
+          params: { ...firstQuery, page: 1, pageSize: pokemonBatchSize },
+        })
+      : null,
+  }),
 )
-
+const batches = usePokemonBatches(activeQuery, initial.value?.list || null)
+const { data, pending, failed, restoring, placeholders } = batches
 const { data: types } = await useAsyncData(
   'pokemon-list-types',
   () => fetchApi<TypeSummary[]>('/types', { params: { locale: locale.value } }),
   { watch: [locale] },
 )
 
-const { data: generations } = await useAsyncData(
-  'pokemon-list-generations',
-  () => fetchApi<GenerationSummary[]>('/generations', { params: { locale: locale.value } }),
-  { watch: [locale] },
+let filterObserver: IntersectionObserver | undefined
+let sizeObserver: ResizeObserver | undefined
+function observeFilterPosition() {
+  filterObserver?.disconnect()
+  if (!filterAnchor.value) return
+  const headerHeight = document.querySelector('header')?.getBoundingClientRect().height || 68
+  filterObserver = new IntersectionObserver(
+    ([entry]) => {
+      if (entry) filterStuck.value = entry.boundingClientRect.top <= headerHeight
+    },
+    { rootMargin: `-${headerHeight}px 0px 0px 0px`, threshold: [0, 1] },
+  )
+  filterObserver.observe(filterAnchor.value)
+}
+function saveOpenGeneration() {
+  try {
+    sessionStorage.setItem('pokedex:open-generation', String(openGeneration.value || ''))
+  } catch {
+    /* Optional storage. */
+  }
+}
+watch(openGeneration, saveOpenGeneration)
+onMounted(() => {
+  try {
+    const saved = Number(sessionStorage.getItem('pokedex:open-generation'))
+    openGeneration.value = generationCatalog.some((item) => item.id === saved) ? saved : null
+  } catch {
+    openGeneration.value = null
+  }
+  sizeObserver = new ResizeObserver((entries) => {
+    for (const entry of entries) {
+      if (entry.target === filterForm.value)
+        filterHeight.value =
+          entry.borderBoxSize[0]?.blockSize || entry.target.getBoundingClientRect().height
+      else observeFilterPosition()
+    }
+  })
+  if (filterForm.value) sizeObserver.observe(filterForm.value)
+  const header = document.querySelector('header')
+  if (header) sizeObserver.observe(header)
+  observeFilterPosition()
+  hydrated.value = true
+  if (route.query.page || 'cardPreview' in route.query || 'cardStyle' in route.query) {
+    void router.replace({
+      path: route.path,
+      query: { ...route.query, page: undefined, cardPreview: undefined, cardStyle: undefined },
+    })
+  }
+})
+onUnmounted(() => {
+  filterObserver?.disconnect()
+  sizeObserver?.disconnect()
+})
+useBrowsePosition(
+  async (top) => {
+    await nextTick()
+    await batches.restore(top)
+  },
+  0,
+  { scrollSaveDelay: 150 },
 )
 
-useSeoMeta({
-  title: () => t('nav.pokemon'),
-  description: () => t('home.description'),
-})
-
-async function navigateToQuery(
-  targetQuery: Record<string, string | undefined>,
-  target: PokemonListQuery,
-) {
-  if (navigating.value) return
-  const key = pokemonListKey(target)
-  const cached = pokemonListCache.get(key)
-  const loadingToast = cached
-    ? undefined
-    : toast.add({ title: t('common.loadingAll'), duration: 120000 })
-  const origin = route.fullPath
-  navigating.value = true
-  try {
-    if (!cached) await loadList(target)
-    if (route.fullPath !== origin) return
-    await router.push(localePath({ path: '/pokemon', query: targetQuery }))
-    window.scrollTo({ top: 0, behavior: 'instant' })
-  } catch {
-    toast.add({ title: t('common.error'), description: t('common.retry'), color: 'error' })
-  } finally {
-    if (loadingToast) toast.remove(loadingToast.id)
-    navigating.value = false
+async function toggleGeneration(id: number) {
+  const previous = openGeneration.value
+  animateGeneration.value = openGeneration.value === id ? null : id
+  openGeneration.value = openGeneration.value === id ? null : id
+  saveOpenGeneration()
+  // Opening a visible bar must not pull the filter into its sticky position.
+  // Only recover visibility if collapsing an earlier section hid the new bar.
+  if (previous === null || previous === id) return
+  await nextTick()
+  const bar = document.getElementById(`generation-${id}-trigger`)
+  const top = (filterForm.value?.getBoundingClientRect().bottom || 0) + 8
+  if (bar && bar.getBoundingClientRect().top < top) {
+    window.scrollBy({ top: bar.getBoundingClientRect().top - top, behavior: 'instant' })
   }
 }
-
 function applyFilters() {
-  const targetQuery = {
+  filtersExpanded.value = false
+  const query = {
     q: filters.q.trim() || undefined,
     type: filters.type === allFilters ? undefined : filters.type,
-    generation: filters.generation === allFilters ? undefined : filters.generation,
-    sort: filters.sort === 'id' ? undefined : filters.sort,
     isLegendary: filters.legendary ? 'true' : undefined,
     isMythical: filters.mythical ? 'true' : undefined,
+    isMega: filters.mega ? 'true' : undefined,
+    isGigantamax: filters.gigantamax ? 'true' : undefined,
   }
-  filtersExpanded.value = false
-  void navigateToQuery(targetQuery, pokemonListQuery(targetQuery, locale.value))
+  const location = router.resolve(localePath({ path: '/pokemon', query }))
+  saveBrowsePosition(location, 0)
+  submitting.value = true
+  if (location.fullPath === route.fullPath) {
+    void batches.restore(0).finally(() => {
+      submitting.value = false
+    })
+    return
+  }
+  void router
+    .push(location)
+    .then(() => window.scrollTo({ top: 0, behavior: 'instant' }))
+    .finally(() => {
+      submitting.value = false
+    })
 }
-
 function clearFilters() {
-  filters.q = ''
-  filters.type = allFilters
-  filters.generation = allFilters
-  filters.sort = 'id'
-  filters.legendary = false
-  filters.mythical = false
+  Object.assign(filters, {
+    q: '',
+    type: allFilters,
+    legendary: false,
+    mythical: false,
+    mega: false,
+    gigantamax: false,
+  })
   applyFilters()
 }
+useSeoMeta({ title: () => t('nav.pokemon'), description: () => t('home.description') })
 </script>
 
 <template>
-  <section class="dex-grid-container mx-auto max-w-7xl px-4 py-8 lg:px-8">
-    <div class="mb-6">
-      <p class="text-sm font-bold uppercase tracking-[0.22em] text-red-500">Pokédex</p>
-      <h1 class="mt-2 text-4xl font-black tracking-tight">{{ t('nav.pokemon') }}</h1>
-    </div>
-
+  <section
+    class="dex-grid-container pokemon-catalog mx-auto max-w-7xl px-4 py-8 lg:px-8"
+    :style="{ '--dex-filter-height': `${filterHeight}px` }"
+  >
+    <h1 class="sr-only">{{ t('nav.pokemon') }}</h1>
     <div ref="filterAnchor" aria-hidden="true" class="h-px" />
     <form
+      ref="filterForm"
       class="dex-filter-form mb-6 rounded-2xl border border-[#CCD7DE] bg-white p-4 sm:p-5"
       :class="{
         'dex-filter-form--stuck': filterStuck,
         'dex-filter-form--expanded': filtersExpanded,
       }"
+      :aria-busy="submitting || pending"
       @submit.prevent="applyFilters"
     >
       <div class="dex-filter-grid">
         <UInput
           v-model="filters.q"
+          :disabled="!hydrated"
           class="dex-filter-search"
           :placeholder="t('filters.searchPlaceholder')"
+          :aria-label="t('filters.searchPlaceholder')"
           icon="i-lucide-search"
         />
-        <USelect
+        <TypeSelect
           v-model="filters.type"
-          class="dex-filter-extra"
-          :items="[
-            { label: t('filters.allTypes'), value: allFilters },
-            ...(types || []).map((item) => ({ label: item.localizedName, value: item.name })),
-          ]"
-        />
-        <USelect
-          v-model="filters.generation"
-          class="dex-filter-extra"
-          :items="[
-            { label: t('filters.allGenerations'), value: allFilters },
-            ...(generations || []).map((item) => ({
-              label: item.localizedName,
-              value: String(item.id),
-            })),
-          ]"
-        />
-        <USelect
-          v-model="filters.sort"
-          class="dex-filter-extra"
-          :items="[
-            { label: t('filters.sortId'), value: 'id' },
-            { label: t('filters.sortName'), value: 'name' },
-            { label: t('filters.sortBaseExperience'), value: 'base_experience' },
-            { label: t('filters.sortNewest'), value: 'newest' },
-          ]"
+          :disabled="!hydrated"
+          class="dex-filter-extra dex-filter-type"
+          :types="types || []"
+          :all-value="allFilters"
+          :all-label="t('filters.allTypes')"
+          :label="locale === 'zh-Hans' ? '属性' : 'Type'"
+          show-icon
         />
         <div class="dex-filter-actions flex gap-2">
-          <UButton type="submit" :disabled="navigating" class="justify-center">{{
+          <UButton type="submit" class="justify-center" :disabled="!hydrated">{{
             t('filters.apply')
           }}</UButton>
           <UButton
             type="button"
-            :disabled="navigating"
             color="neutral"
             variant="soft"
             class="dex-filter-clear"
+            :disabled="!hydrated"
             @click="clearFilters"
             >{{ t('filters.clear') }}</UButton
           >
@@ -309,6 +239,7 @@ function clearFilters() {
             color="neutral"
             variant="soft"
             class="dex-filter-more"
+            :disabled="!hydrated"
             :aria-expanded="filtersExpanded"
             @click="filtersExpanded = !filtersExpanded"
             >{{ t(filtersExpanded ? 'filters.less' : 'filters.more') }}</UButton
@@ -316,38 +247,96 @@ function clearFilters() {
         </div>
       </div>
       <div class="dex-filter-flags mt-3 flex flex-wrap gap-4">
-        <UCheckbox v-model="filters.legendary" :label="t('filters.legendary')" />
-        <UCheckbox v-model="filters.mythical" :label="t('filters.mythical')" />
+        <AppCheckbox
+          v-model="filters.legendary"
+          :disabled="!hydrated"
+          :label="t('filters.legendary')"
+        />
+        <AppCheckbox
+          v-model="filters.mythical"
+          :disabled="!hydrated"
+          :label="t('filters.mythical')"
+        />
+        <AppCheckbox v-model="filters.mega" :disabled="!hydrated" label="Mega" />
+        <AppCheckbox
+          v-model="filters.gigantamax"
+          :disabled="!hydrated"
+          :label="locale === 'zh-Hans' ? '超极巨化' : 'Gigantamax'"
+        />
       </div>
     </form>
 
-    <div v-if="data" class="mb-4 flex items-center justify-between">
-      <p class="text-sm font-medium text-slate-500">
-        {{ t('filters.results', { count: data.total }) }}
-      </p>
-      <p class="text-sm text-slate-400">
-        {{
-          data.items.length < data.total
-            ? t(loadingAll ? 'filters.loadingRemaining' : 'filters.partialShown', {
-                count: data.items.length,
-                total: data.total,
-              })
-            : t('filters.allShown')
-        }}
-      </p>
-    </div>
-
-    <div v-if="pending || !hydrated" class="pokemon-grid">
-      <USkeleton v-for="item in 16" :key="item" class="h-48 rounded-[14px]" />
-    </div>
-    <UAlert v-else-if="error" color="error" variant="soft" :title="t('common.error')" />
-    <div v-else-if="data?.items.length" class="pokemon-grid">
-      <PokemonCard v-for="pokemon in data.items" :key="pokemon.id" :pokemon="pokemon" />
-    </div>
-    <UAlert v-else color="neutral" variant="soft" :title="t('common.empty')" />
-    <div v-if="loadError" class="mt-5 flex items-center gap-3">
-      <p role="alert" class="text-sm text-red-700">{{ t('common.error') }}</p>
-      <UButton @click="loadInitialList">{{ t('common.retry') }}</UButton>
-    </div>
+    <p
+      v-if="submitting || (filtered && pending && !data)"
+      role="status"
+      aria-live="polite"
+      class="mb-4 text-sm text-slate-500"
+    >
+      {{ locale === 'zh-Hans' ? '正在搜索宝可梦…' : 'Searching Pokémon…' }}
+    </p>
+    <PokemonBatchList
+      v-if="filtered"
+      :placeholders="placeholders"
+      :data="data"
+      :pending="pending"
+      :failed="failed"
+      :restoring="restoring"
+      :paused="Boolean(route.query.detail)"
+      @more="batches.loadMore"
+      @retry="batches.retry"
+    />
+    <template v-else>
+      <div class="generation-directory">
+        <section
+          v-for="generation in generationCatalog"
+          :key="generation.id"
+          class="generation-section"
+          :class="{ 'generation-section--open': openGeneration === generation.id }"
+          :aria-labelledby="`generation-${generation.id}-trigger`"
+        >
+          <GenerationBar
+            :generation="generation"
+            :loading="openGeneration === generation.id && pending && !data"
+            :disabled="!hydrated"
+            :expanded="openGeneration === generation.id"
+            @toggle="toggleGeneration(generation.id)"
+          />
+          <div
+            :id="`generation-${generation.id}-content`"
+            :hidden="openGeneration !== generation.id"
+          >
+            <PokemonBatchList
+              v-if="openGeneration === generation.id"
+              generation
+              :animate-entry="animateGeneration === generation.id"
+              :placeholders="placeholders"
+              class="generation-content"
+              :data="data"
+              :pending="pending"
+              :failed="failed"
+              :restoring="restoring"
+              :paused="Boolean(route.query.detail)"
+              @more="batches.loadMore"
+              @retry="batches.retry"
+            />
+          </div>
+        </section>
+      </div>
+    </template>
   </section>
 </template>
+
+<style>
+.generation-directory {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.generation-section {
+  min-width: 0;
+}
+.generation-content {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+</style>

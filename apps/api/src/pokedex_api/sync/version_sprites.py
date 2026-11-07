@@ -12,7 +12,9 @@ import json
 import logging
 import os
 import random
+import shutil
 from collections.abc import Iterator
+from datetime import UTC, datetime
 from io import BytesIO
 from pathlib import Path, PurePosixPath
 from urllib.parse import urlsplit
@@ -23,6 +25,7 @@ from PIL import Image, UnidentifiedImageError
 
 logger = logging.getLogger(__name__)
 SUPPORTED_FORMATS = {"png": "PNG", "gif": "GIF", "webp": "WEBP"}
+SYNC_LOCK_KEY = 73150821920261026
 type SpriteSourceRow = tuple[str, int, str, str, str, str | None, str | None, str]
 CREATE_TABLE = """
 CREATE TABLE IF NOT EXISTS version_sprite (
@@ -56,6 +59,19 @@ CREATE INDEX IF NOT EXISTS ix_version_sprite_status
 CREATE INDEX IF NOT EXISTS ix_version_sprite_checksum
     ON version_sprite (checksum);
 """
+
+
+def save_progress(path: str | None, processed: int, total: int, counts: dict[str, int]) -> None:
+    if not path:
+        return
+    destination = Path(path)
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    temporary = destination.with_name(destination.name + f".{os.getpid()}.tmp")
+    temporary.write_text(json.dumps({
+        "updatedAt": datetime.now(UTC).isoformat(),
+        "processedUrls": processed, "totalUrls": total, **counts,
+    }), encoding="utf-8")
+    os.replace(temporary, destination)
 
 
 def sprite_leaves(
@@ -162,28 +178,40 @@ async def materialize_source_fields(db: asyncpg.Connection) -> int:
     return count
 
 
-def validate_image(data: bytes, extension: str) -> tuple[int, int, int]:
+def inspect_image(data: bytes) -> tuple[str, int, int, int]:
     if not data:
         raise ValueError("empty response")
     with Image.open(BytesIO(data)) as image:
-        if image.format != SUPPORTED_FORMATS.get(extension):
-            raise ValueError(f"expected {extension}, got {image.format}")
+        detected = next(
+            (kind for kind, name in SUPPORTED_FORMATS.items() if name == image.format), None
+        )
+        if detected is None:
+            raise ValueError(f"unsupported image format: {image.format}")
         width, height = image.size
         frames = getattr(image, "n_frames", 1)
         image.verify()
+    return detected, width, height, frames
+
+
+def validate_image(data: bytes, extension: str) -> tuple[int, int, int]:
+    detected, width, height, frames = inspect_image(data)
+    if detected != extension:
+        raise ValueError(f"expected {extension}, got {SUPPORTED_FORMATS[detected]}")
     return width, height, frames
 
 
 async def download_one(
     client: httpx.AsyncClient, semaphore: asyncio.Semaphore, url: str, fmt: str
-) -> tuple[str, bytes | None, tuple[int, int, int] | None, str | None]:
+) -> tuple[str, bytes | None, tuple[str, int, int, int] | None, str | None]:
     for attempt in range(3):
         try:
             async with semaphore:
                 response = await client.get(url)
             response.raise_for_status()
             data = response.content
-            dimensions = validate_image(data, fmt)
+            dimensions = inspect_image(data)
+            if dimensions[0] != fmt:
+                logger.info("Source suffix %s contains valid %s: %s", fmt, dimensions[0], url)
             return "downloaded", data, dimensions, None
         except (UnidentifiedImageError, ValueError, OSError) as error:
             if attempt == 2:
@@ -207,9 +235,15 @@ async def mirror_versions(
     limit: int | None = None,
     owner_id: int | None = None,
 ) -> dict[str, int]:
+    if concurrency < 1:
+        raise ValueError("concurrency must be positive")
+    if limit is not None and limit < 0:
+        raise ValueError("limit cannot be negative")
     dsn = database_url.replace("postgresql+asyncpg://", "postgresql://")
     db = await asyncpg.connect(dsn, command_timeout=600)
     try:
+        if not await db.fetchval("SELECT pg_try_advisory_lock($1)", SYNC_LOCK_KEY):
+            raise RuntimeError("Another version sprite or media maintenance task is running")
         if owner_id is None and os.environ.get("VERSION_SPRITE_SKIP_MATERIALIZE") == "1":
             field_count = await db.fetchval("SELECT count(*) FROM version_sprite")
             if not field_count:
@@ -257,6 +291,9 @@ async def mirror_versions(
             "corruptUrls": 0,
             "newBytes": 0,
         }
+        progress_path = os.environ.get("VERSION_SPRITE_PROGRESS_PATH")
+        max_new_bytes = int(os.environ.get("VERSION_SPRITE_MAX_NEW_BYTES", "0"))
+        save_progress(progress_path, 0, len(pending), counts)
         semaphore = asyncio.Semaphore(concurrency)
         async with httpx.AsyncClient(
             timeout=45,
@@ -275,14 +312,16 @@ async def mirror_versions(
                 updates = []
                 for row, (status, data, dimensions, error) in zip(batch, results, strict=True):
                     checksum = local_path = byte_size = width = height = frame_count = None
+                    actual_format = row["format"]
                     if status == "downloaded" and data is not None and dimensions is not None:
+                        actual_format, width, height, frame_count = dimensions
                         checksum = hashlib.sha256(data).hexdigest()
                         local_path = existing.get(checksum)
                         if local_path is None:
                             relative = (
                                 Path("version-sprites")
                                 / checksum[:2]
-                                / f"{checksum}.{row['format']}"
+                                / f"{checksum}.{actual_format}"
                             )
                             destination = media_root / relative
                             destination.parent.mkdir(parents=True, exist_ok=True)
@@ -298,7 +337,6 @@ async def mirror_versions(
                         else:
                             counts["reusedHashes"] += 1
                         byte_size = len(data)
-                        width, height, frame_count = dimensions
                         counts["downloadedUrls"] += 1
                     elif status == "corrupt":
                         counts["corruptUrls"] += 1
@@ -315,21 +353,26 @@ async def mirror_versions(
                             frame_count,
                             error,
                             row["source_url"],
+                            actual_format,
                         )
                     )
                 await db.executemany(
                     """
                     UPDATE version_sprite SET status=$1, checksum=$2, local_path=$3,
                         byte_size=$4, width=$5, height=$6, frame_count=$7,
-                        error=$8, attempts=attempts+1, updated_at=now()
+                        error=$8, format=$10, attempts=attempts+1, updated_at=now()
                     WHERE source_url=$9 AND status IN ('pending', 'download_failed', 'corrupt')
                 """,
                     updates,
                 )
-                if start % (concurrency * 4 * 20) == 0 or start + len(batch) == len(pending):
-                    logger.info(
-                        "Processed %s/%s URLs: %s", start + len(batch), len(pending), counts
-                    )
+                save_progress(progress_path, start + len(batch), len(pending), counts)
+                logger.info(
+                    "Processed %s/%s URLs: %s", start + len(batch), len(pending), counts
+                )
+                if max_new_bytes and counts["newBytes"] >= max_new_bytes:
+                    raise RuntimeError("Download byte budget reached; progress has been saved")
+                if shutil.disk_usage(media_root).free < 10 * 1024**3:
+                    raise RuntimeError("Less than 10 GiB free; progress has been saved")
         return {"sourceFields": field_count, "uniqueUrlsProcessed": len(pending), **counts}
     finally:
         await db.close()

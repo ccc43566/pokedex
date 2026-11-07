@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 
 import base64
@@ -8,7 +7,7 @@ from typing import Any
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from pokedex_api.models import MediaAsset, SourceRecord
+from pokedex_api.models import EvolutionChain, EvolutionNode, MediaAsset, SourceRecord
 from pokedex_api.services.pokemon import get_pokemon
 from pokedex_api.sync.importer import PokeApiImporter
 
@@ -172,8 +171,7 @@ class FakeProvider:
 
     async def list_resources(self, endpoint: str) -> list[dict[str, Any]]:
         return [
-            {"name": self.payloads[url].get("name"), "url": url}
-            for url in self.lists[endpoint]
+            {"name": self.payloads[url].get("name"), "url": url} for url in self.lists[endpoint]
         ]
 
     async def get_resource(self, url: str) -> dict[str, Any]:
@@ -208,6 +206,28 @@ async def test_importer_first_run_and_idempotency(
 
     second = await importer.run(force=False)
     assert second["status"] == "unchanged"
+
+
+async def test_import_keeps_alternatives_even_when_raw_payload_is_unavailable(
+    session: AsyncSession,
+    tmp_path: Path,
+) -> None:
+    provider = FakeProvider()
+    chain = provider.payloads["https://example.test/api/v2/evolution-chain/1/"]
+    methods = chain["chain"]["evolves_to"][0]["evolution_details"]
+    methods.append({"min_level": 20, "time_of_day": "night", "trigger": {"name": "level-up"}})
+    importer = PokeApiImporter(session, provider, media_root=tmp_path, download_media=False)
+    await importer.run(force=True)
+    stored = await session.scalar(select(EvolutionNode).where(EvolutionNode.species_id == 2))
+    assert stored is not None and stored.condition["alternatives"] == methods
+    raw = await session.get(EvolutionChain, 1)
+    assert raw is not None
+    raw.raw_payload = {}
+    await session.commit()
+    detail = await get_pokemon(session, "1", locale="zh-Hans")
+    assert detail is not None
+    assert detail.evolution_graph.edges[0].methods == methods
+    assert detail.evolution_graph.warnings
 
 
 async def test_media_only_registers_existing_files_without_download(

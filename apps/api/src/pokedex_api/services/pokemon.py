@@ -1,16 +1,15 @@
-
 from __future__ import annotations
 
 import math
+import re
 from collections import defaultdict
 from typing import Any
 
-from sqlalchemy import Select, and_, func, or_, select
+from sqlalchemy import ColumnElement, Select, and_, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from pokedex_api.models import (
     Ability,
-    EvolutionNode,
     GenerationEntity,
     LocalizedName,
     LocalizedText,
@@ -27,7 +26,6 @@ from pokedex_api.models import (
 from pokedex_api.schemas import (
     AbilityDetail,
     AbilityValue,
-    EvolutionNodeOut,
     GenerationSummary,
     MediaAssetOut,
     NamedResource,
@@ -40,6 +38,10 @@ from pokedex_api.schemas import (
     TypeDetail,
     TypeSummary,
 )
+from pokedex_api.services.catalog import dex_catalog, identities, is_totem_record, species_options
+from pokedex_api.services.detail_facts import egg_groups, stat_changes
+from pokedex_api.services.evolution import evolution_graph, legacy_tree
+from pokedex_api.services.search_index import data_version, matching_ids, search_index, worker
 
 SUPPORTED_LOCALES = ("zh-Hans", "en")
 
@@ -142,14 +144,15 @@ def _sprite_from_maps(
     return media.get(pokemon.id, {}).get(kind) or _remote_sprite(pokemon, kind)
 
 
-def _sort_expression(sort: str) -> tuple[Any, ...]:
+def _sort_expression(sort: str, catalog: Any) -> tuple[Any, ...]:
+    segments = (catalog.c.national, catalog.c.variant, Pokemon.id)
     if sort == "base_experience":
-        return (Pokemon.base_experience.desc().nullslast(), Pokemon.id)
+        return (catalog.c.family_experience.desc().nullslast(), *segments)
     if sort == "name":
-        return (Pokemon.name, Pokemon.id)
+        return (PokemonSpecies.name, *segments)
     if sort == "newest":
-        return (Pokemon.id.desc(),)
-    return (Pokemon.id,)
+        return (catalog.c.national.desc(), catalog.c.variant, Pokemon.id)
+    return segments
 
 
 def _pokemon_filtered_query(
@@ -160,11 +163,48 @@ def _pokemon_filtered_query(
     generation: int | None,
     is_legendary: bool | None,
     is_mythical: bool | None,
+    display_name_ids: list[int] | None = None,
+    is_mega: bool | None = None,
+    is_gigantamax: bool | None = None,
 ) -> Select[Any]:
-    stmt = select(Pokemon.id).join(PokemonSpecies, Pokemon.species_id == PokemonSpecies.id)
+    stmt = (
+        select(Pokemon.id)
+        .join(PokemonSpecies, Pokemon.species_id == PokemonSpecies.id)
+        .where(~is_totem_record())
+    )
     if q:
         pattern = f"%{q.strip()}%"
-        search_conditions = [Pokemon.name.ilike(pattern), LocalizedName.name.ilike(pattern)]
+        search_conditions: list[ColumnElement[bool]] = [
+            Pokemon.name.ilike(pattern),
+            LocalizedName.name.ilike(pattern),
+        ]
+        if display_name_ids:
+            search_conditions.append(Pokemon.id.in_(display_name_ids))
+        if q.strip().isdigit():
+            number = int(q.strip())
+            search_conditions.extend([Pokemon.id == number, Pokemon.species_id == number])
+        elif match := re.fullmatch(r"(\d+)\.(\d+)", q.strip()):
+            catalog = dex_catalog()
+            search_conditions.append(
+                Pokemon.id.in_(
+                    select(catalog.c.pokemon_id).where(
+                        catalog.c.national == int(match[1]), catalog.c.variant == int(match[2])
+                    )
+                )
+            )
+        search_conditions.append(
+            Pokemon.id.in_(
+                select(PokemonForm.pokemon_id)
+                .join(
+                    LocalizedName,
+                    and_(
+                        LocalizedName.entity_type == "pokemon-form",
+                        LocalizedName.entity_id == PokemonForm.id,
+                    ),
+                )
+                .where(LocalizedName.name.ilike(pattern))
+            )
+        )
         if use_fts:
             search_conditions.append(
                 func.to_tsvector("english", LocalizedName.name).op("@@")(
@@ -190,6 +230,38 @@ def _pokemon_filtered_query(
         stmt = stmt.where(PokemonSpecies.is_legendary == is_legendary)
     if is_mythical is not None:
         stmt = stmt.where(PokemonSpecies.is_mythical == is_mythical)
+    # Forms are selected BEFORE counting and pagination. Two selected form tags
+    # form a union; type/search/species filters still intersect that union.
+    mega = (
+        select(PokemonForm.id)
+        .where(PokemonForm.pokemon_id == Pokemon.id, PokemonForm.is_mega.is_(True))
+        .exists()
+    )
+    token = func.lower(func.coalesce(PokemonForm.form_name, ""))
+    gigantamax = (
+        select(PokemonForm.id)
+        .where(
+            PokemonForm.pokemon_id == Pokemon.id,
+            or_(
+                token == "gmax",
+                token.startswith("gmax-"),
+                token.endswith("-gmax"),
+                token.contains("-gmax-"),
+            ),
+        )
+        .exists()
+    )
+    selected_forms: list[ColumnElement[bool]] = []
+    if is_mega:
+        selected_forms.append(mega)
+    if is_gigantamax:
+        selected_forms.append(gigantamax)
+    if selected_forms:
+        stmt = stmt.where(or_(*selected_forms))
+    if is_mega is False:
+        stmt = stmt.where(~mega)
+    if is_gigantamax is False:
+        stmt = stmt.where(~gigantamax)
     return stmt.distinct()
 
 
@@ -202,12 +274,66 @@ async def list_pokemon(
     generation: int | None = None,
     is_legendary: bool | None = None,
     is_mythical: bool | None = None,
+    is_mega: bool | None = None,
+    is_gigantamax: bool | None = None,
     page: int = 1,
     page_size: int = 24,
     sort: str = "id",
     media_public_path: str = "/media",
 ) -> PaginatedPokemon:
+    from fastapi import HTTPException
+
     locale = normalize_locale(locale)
+    q = (q.strip() or None) if q else None
+    params = dict(locale=locale, q=q, type_name=type_name, generation=generation,
+                  is_legendary=is_legendary, is_mythical=is_mythical,
+                  is_mega=is_mega, is_gigantamax=is_gigantamax,
+                  page=page, page_size=page_size, sort=sort, media_public_path=media_public_path)
+    for _ in range(3):
+        version = await data_version(session)
+        key = (version, *params.values())
+
+        async def build(version: str = version) -> PaginatedPokemon:
+            result = await _list_pokemon(
+                session, locale=locale, q=q, type_name=type_name, generation=generation,
+                is_legendary=is_legendary, is_mythical=is_mythical, is_mega=is_mega,
+                is_gigantamax=is_gigantamax, page=page, page_size=page_size,
+                sort=sort, media_public_path=media_public_path, version=version,
+            )
+            return result.model_copy(update={"data_version": version})
+
+        result = await worker(session).results.load(key, build)
+        if await data_version(session) == version:
+            return result.model_copy(deep=True)
+    raise HTTPException(
+        503, "Pokémon data is updating; retry shortly", headers={"Retry-After": "1"}
+    )
+
+
+async def _list_pokemon(
+    session: AsyncSession,
+    *,
+    locale: str,
+    q: str | None = None,
+    type_name: str | None = None,
+    generation: int | None = None,
+    is_legendary: bool | None = None,
+    is_mythical: bool | None = None,
+    is_mega: bool | None = None,
+    is_gigantamax: bool | None = None,
+    page: int = 1,
+    page_size: int = 24,
+    sort: str = "id",
+    media_public_path: str = "/media",
+    version: str,
+) -> PaginatedPokemon:
+    locale = normalize_locale(locale)
+    index = await search_index(session, locale, version)
+    display_name_ids = (
+        matching_ids(index, q)
+        if q and not re.fullmatch(r"\d+(?:\.\d+)?", q.strip())
+        else []
+    )
     base = _pokemon_filtered_query(
         q=q,
         use_fts=session.get_bind().dialect.name == "postgresql",
@@ -215,20 +341,26 @@ async def list_pokemon(
         generation=generation,
         is_legendary=is_legendary,
         is_mythical=is_mythical,
+        is_mega=is_mega,
+        is_gigantamax=is_gigantamax,
+        display_name_ids=display_name_ids,
     )
     total = int(await session.scalar(select(func.count()).select_from(base.subquery())) or 0)
     total_pages = max(1, math.ceil(total / page_size))
     page = min(max(1, page), total_pages)
+    catalog = dex_catalog()
     raw_ids = (
         await session.scalars(
-            base.order_by(*_sort_expression(sort))
+            select(Pokemon.id)
+            .join(catalog, catalog.c.pokemon_id == Pokemon.id)
+            .join(PokemonSpecies, Pokemon.species_id == PokemonSpecies.id)
+            .where(Pokemon.id.in_(base))
+            .order_by(*_sort_expression(sort, catalog))
             .offset((page - 1) * page_size)
             .limit(page_size)
         )
     ).all()
-    ids: list[int] = [
-        int(row[0]) if isinstance(row, tuple) else int(row) for row in raw_ids
-    ]
+    ids: list[int] = [int(row[0]) if isinstance(row, tuple) else int(row) for row in raw_ids]
     if not ids:
         return PaginatedPokemon(
             items=[],
@@ -240,16 +372,12 @@ async def list_pokemon(
             has_previous=page > 1,
         )
 
-    pokemon_rows = list(
-        (await session.scalars(select(Pokemon).where(Pokemon.id.in_(ids)))).all()
-    )
+    pokemon_rows = list((await session.scalars(select(Pokemon).where(Pokemon.id.in_(ids)))).all())
     pokemon_by_id = {item.id: item for item in pokemon_rows}
     species_ids = [item.species_id for item in pokemon_rows if item.species_id is not None]
     species_rows = list(
         (
-            await session.scalars(
-                select(PokemonSpecies).where(PokemonSpecies.id.in_(species_ids))
-            )
+            await session.scalars(select(PokemonSpecies).where(PokemonSpecies.id.in_(species_ids)))
         ).all()
     )
     species_by_id = {item.id: item for item in species_rows}
@@ -278,6 +406,7 @@ async def list_pokemon(
         )
 
     media = await media_map(session, ids, media_public_path)
+    display = {pid: index["identities"][str(pid)] for pid in ids}
     items: list[PokemonListItem] = []
     for pokemon_id in ids:
         pokemon = pokemon_by_id[pokemon_id]
@@ -288,6 +417,7 @@ async def list_pokemon(
                 id=pokemon.id,
                 name=pokemon.name,
                 localized_name=localized.get(pokemon.species_id or 0, fallback),
+                **display[pokemon.id],
                 sprite_url=_sprite_from_maps(pokemon, media, "front-default")
                 or _sprite_from_maps(pokemon, media, "official-artwork"),
                 artwork_url=_sprite_from_maps(pokemon, media, "official-artwork"),
@@ -315,6 +445,7 @@ async def get_pokemon(
     *,
     locale: str,
     media_public_path: str = "/media",
+    form_key: str | None = None,
 ) -> PokemonDetail | None:
     locale = normalize_locale(locale)
     conditions = [Pokemon.name == id_or_name.lower()]
@@ -344,9 +475,7 @@ async def get_pokemon(
             .order_by(PokemonType.slot)
         )
     ).all()
-    type_names = await localized_name_map(
-        session, "type", [row[0] for row in type_rows], locale
-    )
+    type_names = await localized_name_map(session, "type", [row[0] for row in type_rows], locale)
     types = [
         NamedResource(id=type_id, name=name, localized_name=type_names.get(type_id, name))
         for type_id, name, _slot in type_rows
@@ -390,9 +519,7 @@ async def get_pokemon(
             .order_by(StatEntity.id)
         )
     ).all()
-    stat_names = await localized_name_map(
-        session, "stat", [row[0] for row in stat_rows], locale
-    )
+    stat_names = await localized_name_map(session, "stat", [row[0] for row in stat_rows], locale)
     stats = [
         StatValue(
             name=name,
@@ -467,17 +594,31 @@ async def get_pokemon(
         genus_text.sort(key=lambda row: row.locale != locale)
         genus = genus_text[0].text if genus_text else None
 
-    evolutions: list[EvolutionNodeOut] = []
-    if species and species.evolution_chain_id is not None:
-        evolutions = await get_evolution_tree(
-            session, species.evolution_chain_id, locale=locale
-        )
-
     fallback_name = species.name if species else pokemon.name
+    display = await identities(session, [pokemon.id], locale)
+    options = await species_options(
+        session,
+        pokemon,
+        locale=locale,
+        media_public_path=media_public_path,
+    )
+    current = next(
+        (o for o in options if o.pokemon_id == pokemon.id and o.key == form_key),
+        next(o for o in options if o.pokemon_id == pokemon.id and o.is_default),
+    )
+    graph = await evolution_graph(
+        session, pokemon, current, locale=locale, media_public_path=media_public_path
+    )
+    all_stats = list((await session.scalars(select(StatEntity))).all())
+    all_stat_names = await localized_name_map(session, "stat", [s.id for s in all_stats], locale)
+    history_names = {s.name: all_stat_names.get(s.id, s.name) for s in all_stats}
+    if history_names.get("special", "special") == "special":
+        history_names["special"] = "特殊" if locale == "zh-Hans" else "Special"
     return PokemonDetail(
         id=pokemon.id,
         name=pokemon.name,
         localized_name=localized.get(species.id if species else 0, fallback_name),
+        **display[pokemon.id],
         sprite_url=_sprite_from_maps(pokemon, media, "front-default"),
         artwork_url=_sprite_from_maps(pokemon, media, "official-artwork"),
         types=types,
@@ -493,62 +634,22 @@ async def get_pokemon(
         genus=genus,
         abilities=abilities,
         stats=stats,
+        base_stat_total=sum(
+            stat.base_stat
+            for stat in stats
+            if stat.name
+            in {"hp", "attack", "defense", "special-attack", "special-defense", "speed"}
+        ),
+        egg_groups=egg_groups(species.raw_payload or {}, locale) if species else [],
+        gender_rate=species.gender_rate if species else None,
+        stat_changes=stat_changes(pokemon.raw_payload or {}, stats, history_names),
+        stat_history_available="past_stats" in (pokemon.raw_payload or {}),
         forms=forms,
-        evolution_chain=evolutions,
+        form_options=options,
+        evolution_chain=legacy_tree(graph),
+        evolution_graph=graph,
         media=media_items,
     )
-
-
-async def get_evolution_tree(
-    session: AsyncSession,
-    chain_id: int,
-    *,
-    locale: str,
-) -> list[EvolutionNodeOut]:
-    nodes = list(
-        (
-            await session.scalars(
-                select(EvolutionNode)
-                .where(EvolutionNode.chain_id == chain_id)
-                .order_by(EvolutionNode.stage, EvolutionNode.sort_order, EvolutionNode.id)
-            )
-        ).all()
-    )
-    if not nodes:
-        return []
-    species_ids = [node.species_id for node in nodes]
-    species = list(
-        (
-            await session.scalars(
-                select(PokemonSpecies).where(PokemonSpecies.id.in_(species_ids))
-            )
-        ).all()
-    )
-    species_by_id = {item.id: item for item in species}
-    localized = await localized_name_map(
-        session, "pokemon-species", species_ids, normalize_locale(locale)
-    )
-    children_by_parent: dict[int | None, list[EvolutionNode]] = defaultdict(list)
-    for node in nodes:
-        children_by_parent[node.parent_id].append(node)
-
-    def build(node: EvolutionNode, seen: set[int]) -> EvolutionNodeOut:
-        item_species = species_by_id.get(node.species_id)
-        children: list[EvolutionNodeOut] = []
-        if node.id not in seen:
-            seen.add(node.id)
-            children = [build(child, seen.copy()) for child in children_by_parent.get(node.id, [])]
-        fallback = item_species.name if item_species else str(node.species_id)
-        return EvolutionNodeOut(
-            species_id=node.species_id,
-            name=fallback,
-            localized_name=localized.get(node.species_id, fallback),
-            is_baby=node.is_baby,
-            condition=node.condition or {},
-            children=children,
-        )
-
-    return [build(node, set()) for node in children_by_parent.get(None, [])]
 
 
 async def list_types(session: AsyncSession, *, locale: str) -> list[TypeSummary]:
@@ -585,11 +686,7 @@ async def get_type(
     }
     if relation_ids:
         relation_types = list(
-            (
-                await session.scalars(
-                    select(TypeEntity).where(TypeEntity.id.in_(relation_ids))
-                )
-            ).all()
+            (await session.scalars(select(TypeEntity).where(TypeEntity.id.in_(relation_ids)))).all()
         )
         localized_relations = await localized_name_map(
             session, "type", [relation.id for relation in relation_types], locale

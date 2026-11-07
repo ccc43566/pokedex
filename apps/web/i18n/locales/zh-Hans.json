@@ -30,7 +30,7 @@
     "clear": "清除",
     "more": "更多",
     "less": "收起",
-    "legendary": "传说的宝可梦",
+    "legendary": "传说宝可梦",
     "mythical": "幻之宝可梦",
     "results": "共 {count} 条结果",
     "allShown": "已显示全部",
@@ -39,6 +39,7 @@
   },
   "pokemon": {
     "back": "返回图鉴",
+    "backDetail": "返回上一个详情",
     "close": "关闭详情",
     "selected": "已选中",
     "fullPage": "查看完整页面",
@@ -46,6 +47,15 @@
     "mythicalShort": "幻之",
     "description": "图鉴描述",
     "stats": "种族值",
+    "statNames": {
+      "hp": "HP",
+      "attack": "攻击",
+      "defense": "防御",
+      "specialAttack": "特攻",
+      "specialDefense": "特防",
+      "speed": "速度"
+    },
+    "statTotalShort": "总和",
     "abilities": "特性",
     "evolution": "进化链",
     "forms": "形态",
@@ -54,7 +64,17 @@
     "height": "身高",
     "weight": "体重",
     "baseExperience": "基础经验",
-    "notFound": "没有找到这个宝可梦"
+    "notFound": "没有找到这个宝可梦",
+    "eggGroups": "蛋组",
+    "genderRatio": "雌雄比例（物种）",
+    "breedingNote": "蛋组与雌雄比例为物种资料；无性别不等于不能繁殖。",
+    "statTotal": "种族值总和",
+    "statHistory": "历代种族值改动",
+    "changeGeneration": "第 {generation} 世代起",
+    "specialSplit": "特殊分拆",
+    "noStatChanges": "本地数据未记录种族值改动，不代表从未调整。",
+    "statHistoryMissing": "本地尚无历史种族值数据。",
+    "statHistoryNote": "按本地 PokéAPI 历史记录计算；不包含未被数据源记录的版本差异。"
   },
   "types": {
     "title": "属性图鉴",

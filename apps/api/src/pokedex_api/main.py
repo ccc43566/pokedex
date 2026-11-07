@@ -12,7 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from pokedex_api.api.v1.router import router as v1_router
 from pokedex_api.config import Settings, get_settings
-from pokedex_api.db import get_session
+from pokedex_api.db import SessionLocal, get_session
 from pokedex_api.schemas import HealthResponse
 
 
@@ -20,6 +20,20 @@ from pokedex_api.schemas import HealthResponse
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     settings = get_settings()
     settings.media_root.mkdir(parents=True, exist_ok=True)
+    # A failed rebuild leaves source data usable; requests rebuild the current
+    # revision in memory and never reuse a stale persisted snapshot.
+    import logging
+
+    from pokedex_api.services.search_index import rebuild_indexes
+
+    try:
+        async with SessionLocal() as session:
+            await rebuild_indexes(session)
+            await session.commit()
+    except Exception:
+        logging.getLogger(__name__).exception(
+            "Search warmup failed; check migrations and run python -m pokedex_api.sync.search_index"
+        )
     yield
 
 

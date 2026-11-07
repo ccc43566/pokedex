@@ -1,4 +1,5 @@
 import type { PaginatedPokemon } from '~/types/api'
+import { createListCache } from './listCache'
 
 export interface PokemonListQuery {
   locale: string
@@ -7,6 +8,8 @@ export interface PokemonListQuery {
   generation?: number
   isLegendary?: boolean
   isMythical?: boolean
+  isMega?: boolean
+  isGigantamax?: boolean
   sort: string
 }
 
@@ -35,6 +38,8 @@ export function pokemonListQuery(
         : undefined,
     isLegendary: single(query.isLegendary) === 'true' || undefined,
     isMythical: single(query.isMythical) === 'true' || undefined,
+    isMega: single(query.isMega) === 'true' || undefined,
+    isGigantamax: single(query.isGigantamax) === 'true' || undefined,
     sort: single(query.sort) || 'id',
   }
 }
@@ -48,48 +53,96 @@ export function pokemonListKey(query: PokemonListQuery): string {
     query.sort,
     Boolean(query.isLegendary),
     Boolean(query.isMythical),
+    Boolean(query.isMega),
+    Boolean(query.isGigantamax),
   ])
 }
 
-export function createPokemonListCache(maxLists = 3) {
-  const lists = new Map<string, PaginatedPokemon>()
-  const inFlight = new Map<string, Promise<PaginatedPokemon>>()
+export function createPokemonListCache(maxLists = 3, ttl = 120_000, now = Date.now) {
+  const lists = createListCache<{ list: PaginatedPokemon; expires: number }>(maxLists)
+  const inFlight = new Map<string, {
+    promise: Promise<PaginatedPokemon>
+    controller: AbortController
+    users: number
+  }>()
+  let version: string | undefined
 
   function get(key: string): PaginatedPokemon | undefined {
-    const list = lists.get(key)
-    if (list) {
-      lists.delete(key)
-      lists.set(key, list)
+    const entry = lists.get(key)
+    if (!entry) return
+    if (entry.expires <= now() || (version && entry.list.dataVersion !== version)) {
+      lists.remove(key)
+      return
     }
-    return list
+    return entry.list
   }
-
   function set(key: string, list: PaginatedPokemon): void {
-    lists.delete(key)
-    lists.set(key, list)
-    while (lists.size > maxLists) lists.delete(lists.keys().next().value!)
+    if (version && list.dataVersion !== version) return
+    lists.set(key, { list, expires: now() + ttl })
   }
-
-  function load(
-    key: string,
-    fetchList: () => Promise<PaginatedPokemon>,
-  ): Promise<PaginatedPokemon> {
+  function setVersion(next: string) {
+    version = next
+  }
+  function acquire(key: string, fetchList: (signal: AbortSignal) => Promise<PaginatedPokemon>) {
     const cached = get(key)
-    if (cached) return Promise.resolve(cached)
-    const existing = inFlight.get(key)
-    if (existing) return existing
-    const request = fetchList()
-      .then((list) => {
-        set(key, list)
-        return list
-      })
-      .finally(() => inFlight.delete(key))
-    inFlight.set(key, request)
-    return request
+    if (cached) return { promise: Promise.resolve(cached), release: () => {} }
+    // Consumers that validated different revisions must not share a response
+    // that was already produced before a data update.
+    const flightKey = `${version || ''}:${key}`
+    let entry = inFlight.get(flightKey)
+    if (!entry) {
+      const controller = new AbortController()
+      // Entry creation precedes promise callbacks, including synchronous throws.
+      entry = { controller, users: 0, promise: undefined! }
+      const current = entry
+      let request: Promise<PaginatedPokemon>
+      try { request = fetchList(controller.signal) } catch (error) { request = Promise.reject(error) }
+      current.promise = request
+        .then((list) => {
+          if (!controller.signal.aborted) set(key, list)
+          return list
+        })
+        .finally(() => {
+          if (inFlight.get(flightKey) === current) inFlight.delete(flightKey)
+        })
+      inFlight.set(flightKey, current)
+    }
+    entry.users++
+    const current = entry
+    let released = false
+    return {
+      promise: current.promise,
+      release() {
+        if (released) return
+        released = true
+        if (--current.users === 0 && inFlight.get(flightKey) === current) {
+          inFlight.delete(flightKey)
+          current.controller.abort()
+        }
+      },
+    }
   }
-
-  return { get, set, load }
+  function load(key: string, fetchList: () => Promise<PaginatedPokemon>) {
+    // Compatibility for existing callers: an ordinary load holds its lease
+    // until completion. Cancellable page consumers use acquire directly.
+    const lease = acquire(key, fetchList)
+    void lease.promise.then(lease.release, lease.release)
+    return lease.promise
+  }
+  return { get, set, load, acquire, setVersion }
 }
 
 // The shared cache is used only for browser navigation. SSR requests remain isolated.
-export const pokemonListCache = createPokemonListCache()
+export const pokemonListCache = createPokemonListCache(12)
+
+export function hasPokemonFilters(query: PokemonListQuery): boolean {
+  return Boolean(
+    query.q ||
+    query.type ||
+    query.generation ||
+    query.isLegendary ||
+    query.isMythical ||
+    query.isMega ||
+    query.isGigantamax,
+  )
+}

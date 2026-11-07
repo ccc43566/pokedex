@@ -39,6 +39,7 @@
   },
   "pokemon": {
     "back": "Back to Pokédex",
+    "backDetail": "Back to previous details",
     "close": "Close details",
     "selected": "Selected",
     "fullPage": "Open full page",
@@ -46,6 +47,15 @@
     "mythicalShort": "Mythical",
     "description": "Pokédex entry",
     "stats": "Base stats",
+    "statNames": {
+      "hp": "HP",
+      "attack": "Attack",
+      "defense": "Defense",
+      "specialAttack": "Sp. Atk",
+      "specialDefense": "Sp. Def",
+      "speed": "Speed"
+    },
+    "statTotalShort": "Total",
     "abilities": "Abilities",
     "evolution": "Evolution",
     "forms": "Forms",
@@ -54,7 +64,17 @@
     "height": "Height",
     "weight": "Weight",
     "baseExperience": "Base experience",
-    "notFound": "Pokémon not found"
+    "notFound": "Pokémon not found",
+    "eggGroups": "Egg groups",
+    "genderRatio": "Gender ratio (species)",
+    "breedingNote": "Egg groups and gender ratio describe the species. Genderless does not mean unable to breed.",
+    "statTotal": "Base stat total",
+    "statHistory": "Base stat changes",
+    "changeGeneration": "From Generation {generation}",
+    "specialSplit": "Special split",
+    "noStatChanges": "No changes recorded locally; this does not confirm stats never changed.",
+    "statHistoryMissing": "Historical stat data is not available locally.",
+    "statHistoryNote": "Derived from local PokéAPI history; version differences absent from the source are not included."
   },
   "types": {
     "title": "Type encyclopedia",

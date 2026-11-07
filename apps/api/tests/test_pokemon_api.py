@@ -7,6 +7,7 @@ from pokedex_api.models import (
     LocalizedText,
     MediaAsset,
     Pokemon,
+    PokemonForm,
     PokemonSpecies,
     PokemonStat,
     PokemonType,
@@ -127,3 +128,36 @@ async def test_type_and_suggestion_endpoints(
     suggestions = await client.get("/api/v1/search/suggest?locale=zh-Hans&q=皮卡")
     assert suggestions.status_code == 200
     assert suggestions.json()[0]["localizedName"] == "皮卡丘"
+
+
+async def test_form_filters_union_count_and_paginate_before_display(
+    client: AsyncClient, session: AsyncSession
+) -> None:
+    await seed_pikachu(session)
+    for pokemon_id, label, mega in [(10025, "mega", True), (10026, "gmax", False),
+                                    (10027, "not-gmaxish", False)]:
+        session.add(Pokemon(id=pokemon_id, name=f"pikachu-{label}", species_id=25,
+                            is_default=False, sprites={}, raw_payload={}))
+        await session.flush()
+        session.add(PokemonForm(id=pokemon_id, pokemon_id=pokemon_id,
+                                name=f"pikachu-{label}", form_name=label,
+                                is_default=True, is_mega=mega, sprites={}, raw_payload={}))
+        session.add(PokemonType(pokemon_id=pokemon_id, type_id=13, slot=1))
+    await session.commit()
+    async def listing(**params):
+        response = await client.get("/api/v1/pokemon", params=params)
+        assert response.status_code == 200
+        return response.json()
+
+    assert [p["id"] for p in (await listing(isMega="true"))["items"]] == [10025]
+    assert [p["id"] for p in (await listing(isGigantamax="true"))["items"]] == [10026]
+    combined = await listing(isMega="true", isGigantamax="true", pageSize=1)
+    assert combined["total"] == 2
+    assert combined["totalPages"] == 2
+    assert combined["items"][0]["id"] == 10025
+    second = await listing(isMega="true", isGigantamax="true", pageSize=1, page=2)
+    assert second["items"][0]["id"] == 10026
+    assert (await listing(isMega="true", type="electric", generation=1))["total"] == 1
+    assert (await listing(isMega="true", type="water"))["total"] == 0
+    assert (await listing(isGigantamax="true", generation=8))["total"] == 0
+    assert (await listing(isMega="false", isGigantamax="false"))["total"] == 2

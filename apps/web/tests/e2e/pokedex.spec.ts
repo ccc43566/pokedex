@@ -19,16 +19,20 @@ test('shows every result without pagination or duplicate cards', async ({ page }
 test('keeps draft filters unapplied and marks the selected card when the drawer opens', async ({
   page,
 }) => {
-  test.setTimeout(60000)
+  test.setTimeout(120000)
   await page.goto('/zh-Hans/pokemon')
   await expect(page.locator('.pokemon-card').first()).toBeVisible({ timeout: 60000 })
   const search = page.getByPlaceholder('名称或编号')
+  await expect(page.getByRole('button', { name: '筛选', exact: true })).toBeEnabled()
   await search.fill('皮卡丘')
   await expect(page).not.toHaveURL(/q=/)
   expect(await page.locator('.pokemon-card').count()).toBeGreaterThanOrEqual(100)
   await page.getByRole('button', { name: '筛选' }).click()
-  await expect(page).toHaveURL(/q=/, { timeout: 20000 })
-  const pikachu = page.getByRole('link', { name: /#0025 皮卡丘/ })
+  // The local API can queue this query behind initial background batches.
+  // Network diagnosis observed a valid 200 response after 23s; this is not a
+  // card-layout performance assertion.
+  await expect(page).toHaveURL(/q=/, { timeout: 60000 })
+  const pikachu = page.locator('.pokemon-card[data-pokemon-id="25"]')
   await expect(pikachu).toBeVisible()
   await pikachu.click()
   await expect(pikachu).toHaveAttribute('aria-current', 'true')

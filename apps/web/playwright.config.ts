@@ -8,14 +8,14 @@ export default defineConfig({
   workers: 1,
   retries: process.env.CI ? 2 : 0,
   use: {
-    baseURL: 'http://127.0.0.1:3000',
+    baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://127.0.0.1:3000',
     trace: 'on-first-retry',
   },
   projects: [
     { name: 'chromium', use: { ...devices['Desktop Chrome'], ...localBrowser } },
     { name: 'mobile', use: { ...devices['Pixel 7'], ...localBrowser } },
   ],
-  webServer: {
+  webServer: process.env.PLAYWRIGHT_SKIP_WEBSERVER ? undefined : {
     command: 'pnpm dev',
     url: 'http://127.0.0.1:3000/zh-Hans',
     reuseExistingServer: !process.env.CI,

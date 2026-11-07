@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import type { PokemonDetail } from '~/types/api'
+import { currentPokemonName } from '~/utils/pokemon'
 
-const props = defineProps<{ id: string; returnTo: string }>()
+const props = defineProps<{ id: string }>()
 const emit = defineEmits<{ close: [] }>()
 const { t, locale } = useI18n()
-const localePath = useLocalePath()
+const navigation = usePokemonNavigation(() => true)
 const { fetchApi } = usePokedexApi()
+const route = useRoute()
 const detail = shallowRef<PokemonDetail | null>(null)
 const pending = ref(true)
 const failed = ref(false)
@@ -15,7 +17,9 @@ const panel = ref<HTMLElement | null>(null)
 let requestId = 0
 let mediaQuery: MediaQueryList | undefined
 let previousOverflow = ''
+let previousPaddingRight = ''
 let modalApplied = false
+let opener: HTMLElement | null = null
 
 async function loadDetail() {
   const currentRequest = ++requestId
@@ -24,7 +28,7 @@ async function loadDetail() {
   failed.value = false
   try {
     const result = await fetchApi<PokemonDetail>(`/pokemon/${props.id}`, {
-      params: { locale: locale.value },
+      params: { locale: locale.value, form: route.query.form },
     })
     if (currentRequest === requestId) detail.value = result
   } catch {
@@ -44,10 +48,17 @@ function updateModal() {
   const main = document.querySelector('main')
   if (nextModal) {
     previousOverflow = document.body.style.overflow
+    previousPaddingRight = document.body.style.paddingRight
+    const scrollbar = window.innerWidth - document.documentElement.clientWidth
+    if (scrollbar > 0) {
+      const padding = parseFloat(getComputedStyle(document.body).paddingRight) || 0
+      document.body.style.paddingRight = `${padding + scrollbar}px`
+    }
     document.body.style.overflow = 'hidden'
     main?.setAttribute('inert', '')
   } else {
     document.body.style.overflow = previousOverflow
+    document.body.style.paddingRight = previousPaddingRight
     main?.removeAttribute('inert')
   }
   modalApplied = nextModal
@@ -61,7 +72,7 @@ function handleKeydown(event: KeyboardEvent) {
   if (event.key !== 'Tab' || !isModal.value || !panel.value) return
   const elements = [
     ...panel.value.querySelectorAll<HTMLElement>(
-      'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      'a[href], button:not([disabled]), select:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])',
     ),
   ]
   if (!elements.length) return
@@ -77,7 +88,7 @@ function handleKeydown(event: KeyboardEvent) {
 }
 
 watch(
-  [() => props.id, locale],
+  [() => props.id, locale, () => route.query.form],
   () => {
     if (import.meta.client) void loadDetail()
   },
@@ -85,6 +96,7 @@ watch(
 )
 
 onMounted(() => {
+  opener = document.activeElement instanceof HTMLElement ? document.activeElement : null
   mediaQuery = window.matchMedia('(max-width: 1199px)')
   updateModal()
   mediaQuery.addEventListener('change', updateModal)
@@ -98,10 +110,10 @@ onUnmounted(() => {
   window.removeEventListener('keydown', handleKeydown)
   if (modalApplied) {
     document.body.style.overflow = previousOverflow
+    document.body.style.paddingRight = previousPaddingRight
     document.querySelector('main')?.removeAttribute('inert')
   }
-  const card = document.querySelector<HTMLElement>(`[data-pokemon-id="${props.id}"]`)
-  card?.focus()
+  if (opener?.isConnected) opener.focus({ preventScroll: true })
 })
 </script>
 
@@ -112,7 +124,7 @@ onUnmounted(() => {
     class="detail-drawer"
     role="dialog"
     :aria-modal="isModal ? 'true' : undefined"
-    :aria-label="detail?.localizedName || t('pokemon.description')"
+    :aria-label="detail ? currentPokemonName(detail, route.query.form) : t('pokemon.description')"
   >
     <div class="detail-drawer__toolbar">
       <button
@@ -125,10 +137,7 @@ onUnmounted(() => {
         <span aria-hidden="true">×</span>
         {{ t('pokemon.close') }}
       </button>
-      <NuxtLink
-        :to="localePath({ path: `/pokemon/${id}`, query: { from: returnTo } })"
-        class="detail-drawer__full"
-      >
+      <NuxtLink :to="navigation.fullPageLocation(id)" class="detail-drawer__full">
         {{ t('pokemon.fullPage') }}
       </NuxtLink>
     </div>

@@ -1,6 +1,7 @@
 const isDevelopment =
   process.env.NODE_ENV === 'development' || process.env.npm_lifecycle_event === 'dev'
 const devBackend = (process.env.POKEDEX_DEV_BACKEND || 'http://localhost:8080').replace(/\/$/, '')
+const devApiBackend = (process.env.POKEDEX_DEV_API_BACKEND || devBackend).replace(/\/$/, '')
 
 export default defineNuxtConfig({
   compatibilityDate: '2026-10-09',
@@ -19,7 +20,7 @@ export default defineNuxtConfig({
     },
   },
   runtimeConfig: {
-    apiBase: process.env.NUXT_API_BASE || (isDevelopment ? devBackend : 'http://localhost:8000'),
+    apiBase: process.env.NUXT_API_BASE || (isDevelopment ? devApiBackend : 'http://localhost:8000'),
     public: {
       apiBase: process.env.NUXT_PUBLIC_API_BASE || '/api',
       siteUrl:
@@ -42,7 +43,7 @@ export default defineNuxtConfig({
   },
   nitro: {
     devProxy: {
-      '/api/v1': { target: `${devBackend}/api/v1`, changeOrigin: true },
+      '/api/v1': { target: `${devApiBackend}/api/v1`, changeOrigin: true },
       '/media': { target: `${devBackend}/media`, changeOrigin: true },
     },
     routeRules: isDevelopment
@@ -51,6 +52,10 @@ export default defineNuxtConfig({
           '/**': { swr: 3600 },
           '/pokemon/**': { swr: 86400 },
           '/types/**': { swr: 86400 },
+          // Pokémon SSR payloads carry a data revision; do not keep an old
+          // search page in Nitro's broad one-hour page cache after a sync.
+          '/zh-Hans/pokemon': { cache: false },
+          '/en/pokemon': { cache: false },
         },
   },
   app: {

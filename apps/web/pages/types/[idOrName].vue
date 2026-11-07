@@ -1,10 +1,11 @@
 <script setup lang="ts">
+import { isVisibleType } from '~/utils/typePresentation'
 import type { TypeDetail } from '~/types/api'
 
 const route = useRoute()
 const { t, locale } = useI18n()
 const { fetchApi } = usePokedexApi()
-const idOrName = String(route.params.idOrName)
+const idOrName = computed(() => String(route.params.idOrName))
 const relations = [
   'double_damage_to',
   'half_damage_to',
@@ -19,8 +20,8 @@ const {
   pending,
   error,
 } = await useAsyncData(
-  `type-${idOrName}`,
-  () => fetchApi<TypeDetail>(`/types/${idOrName}`, { params: { locale: locale.value } }),
+  () => `type-${idOrName.value}-${locale.value}`,
+  () => fetchApi<TypeDetail>(`/types/${idOrName.value}`, { params: { locale: locale.value } }),
   { watch: [locale, () => route.params.idOrName] },
 )
 
@@ -41,6 +42,13 @@ useSeoMeta({
       <USkeleton class="h-44 rounded-3xl" />
       <USkeleton class="h-80 rounded-3xl" />
     </div>
+    <p v-else-if="type && !isVisibleType(type)" class="text-slate-500">
+      {{
+        locale === 'zh-Hans'
+          ? '此属性不在当前展示集合中。'
+          : 'This type is not in the displayed collection.'
+      }}
+    </p>
     <template v-else-if="type">
       <div class="rounded-[2rem] border border-slate-200 bg-white p-8 shadow-sm">
         <TypeBadge :type="type" />
@@ -55,9 +63,12 @@ useSeoMeta({
           class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm"
         >
           <h2 class="text-xl font-black">{{ t(`types.${relation}`) }}</h2>
-          <div v-if="type.damageRelations[relation]?.length" class="mt-5 flex flex-wrap gap-2">
+          <div
+            v-if="(type.damageRelations[relation] || []).filter(isVisibleType).length"
+            class="mt-5 flex flex-wrap gap-2"
+          >
             <TypeBadge
-              v-for="item in type.damageRelations[relation]"
+              v-for="item in (type.damageRelations[relation] || []).filter(isVisibleType)"
               :key="item.id"
               :type="item"
               link

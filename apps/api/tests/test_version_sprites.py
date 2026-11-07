@@ -47,6 +47,26 @@ def test_gif_animation_is_validated_without_conversion() -> None:
     assert validate_image(data, "gif") == (2, 2, 2)
 
 
+def test_apng_at_gif_source_url_keeps_original_bytes_format_and_animation() -> None:
+    output = BytesIO()
+    images = [Image.new("RGBA", (2, 2), color) for color in ("red", "blue")]
+    images[0].save(output, format="PNG", save_all=True, append_images=images[1:], duration=100)
+    data = output.getvalue()
+
+    async def check() -> None:
+        transport = httpx.MockTransport(lambda request: httpx.Response(200, content=data))
+        async with httpx.AsyncClient(transport=transport) as client:
+            status, original, metadata, error = await download_one(
+                client, asyncio.Semaphore(1), "https://example.test/source.gif", "gif"
+            )
+        assert status == "downloaded"
+        assert original == data
+        assert metadata == ("png", 2, 2, 2)
+        assert error is None
+
+    asyncio.run(check())
+
+
 def test_failed_and_corrupt_downloads_are_distinct() -> None:
     def handler(request: httpx.Request) -> httpx.Response:
         if request.url.path == "/missing.png":

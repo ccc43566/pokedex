@@ -1,5 +1,6 @@
 .env
 .venv/
+.tools/
 __pycache__/
 *.py[cod]
 .pytest_cache/
@@ -7,6 +8,7 @@ __pycache__/
 .mypy_cache/
 node_modules/
 .nuxt/
+.nuxt-search-check/
 .nuxt.stale/
 .output/
 dist/

@@ -28,6 +28,21 @@ class Base(DeclarativeBase):
     pass
 
 
+class PokemonSearchVersion(Base):
+    __tablename__ = "pokemon_search_version"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    version: Mapped[str] = mapped_column(String(32))
+
+
+class PokemonSearchIndex(Base):
+    __tablename__ = "pokemon_search_index"
+
+    locale: Mapped[str] = mapped_column(String(16), primary_key=True)
+    version: Mapped[str] = mapped_column(String(32))
+    payload: Mapped[dict[str, Any]] = mapped_column(JsonType)
+
+
 class SourceRecord(Base):
     __tablename__ = "source_record"
     __table_args__ = (UniqueConstraint("resource_type", "resource_id"),)
@@ -330,3 +345,10 @@ class ContentChunk(Base):
     chunk_index: Mapped[int] = mapped_column(Integer)
     text: Mapped[str] = mapped_column(Text)
     source_hash: Mapped[str | None] = mapped_column(String(64), nullable=True)
+
+# create_all is also used for isolated SQLite tests and fresh database installs.
+from sqlalchemy import event as _search_event  # noqa: E402
+
+from pokedex_api.search_schema import install_search_versioning  # noqa: E402
+
+_search_event.listen(Base.metadata, "after_create", install_search_versioning)

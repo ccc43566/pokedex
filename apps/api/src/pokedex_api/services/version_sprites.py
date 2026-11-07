@@ -19,20 +19,47 @@ async def get_version_media(
     if pokemon is None:
         return None
 
+    variant_ids = list(
+        (
+            await session.scalars(
+                select(Pokemon.id)
+                .where(
+                    Pokemon.species_id == pokemon.species_id
+                    if pokemon.species_id is not None
+                    else Pokemon.id == pokemon.id
+                )
+                .order_by(Pokemon.is_default.desc(), Pokemon.id)
+            )
+        ).all()
+    )
+    variants = list(
+        (
+            await session.scalars(
+                select(Pokemon)
+                .where(Pokemon.id.in_(variant_ids))
+                .order_by(Pokemon.is_default.desc(), Pokemon.id)
+            )
+        ).all()
+    )
     forms = list(
         (
             await session.scalars(
                 select(PokemonForm)
-                .where(PokemonForm.pokemon_id == pokemon.id)
+                .where(PokemonForm.pokemon_id.in_(variant_ids))
                 .order_by(PokemonForm.id)
             )
         ).all()
     )
-    owners = [VersionSpriteOwner(owner_type="pokemon", owner_id=pokemon.id, name=pokemon.name)]
+    owners = [
+        VersionSpriteOwner(owner_type="pokemon", owner_id=item.id, name=item.name)
+        for item in variants
+    ]
     owners.extend(
         VersionSpriteOwner(owner_type="form", owner_id=form.id, name=form.name) for form in forms
     )
-    conditions = [(VersionSprite.owner_type == "pokemon") & (VersionSprite.owner_id == pokemon.id)]
+    conditions = [
+        (VersionSprite.owner_type == "pokemon") & (VersionSprite.owner_id.in_(variant_ids))
+    ]
     if forms:
         conditions.append(
             (VersionSprite.owner_type == "form")

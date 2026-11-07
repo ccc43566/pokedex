@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { isVisibleType } from '~/utils/typePresentation'
 import type { TypeSummary } from '~/types/api'
 
 const { t, locale } = useI18n()
@@ -31,7 +32,7 @@ useSeoMeta({ title: () => t('types.title'), description: () => t('types.descript
     />
     <div v-else class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
       <NuxtLink
-        v-for="type in data || []"
+        v-for="type in (data || []).filter(isVisibleType)"
         :key="type.id"
         :to="localePath(`/types/${type.name}`)"
         class="group rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"

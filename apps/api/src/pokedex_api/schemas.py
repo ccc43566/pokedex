@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 
 from typing import Any, Literal
@@ -37,6 +36,13 @@ class PokemonListItem(ApiModel):
     id: int
     name: str
     localized_name: str
+    species_id: int | None = None
+    national_dex_number: int | None = None
+    variant_index: int | None = 0
+    is_listed: bool = True
+    display_number: str = ""
+    variant_label: str = ""
+    display_name: str = ""
     sprite_url: str | None = None
     artwork_url: str | None = None
     types: list[NamedResource] = Field(default_factory=list)
@@ -46,6 +52,7 @@ class PokemonListItem(ApiModel):
 
 
 class PaginatedPokemon(ApiModel):
+    data_version: str | None = None
     items: list[PokemonListItem]
     page: int
     page_size: int
@@ -88,7 +95,67 @@ class EvolutionNodeOut(ApiModel):
     localized_name: str
     is_baby: bool = False
     condition: dict[str, Any] = Field(default_factory=dict)
+    conditions: list[dict[str, Any]] = Field(default_factory=list)
+    pokemon_id: int | None = None
+    form_key: str | None = None
+    display_number: str = ""
+    display_name: str = ""
+    sprite_url: str | None = None
     children: list[EvolutionNodeOut] = Field(default_factory=list)
+
+
+class EvolutionGraphNode(ApiModel):
+    key: str
+    species_id: int
+    pokemon_id: int
+    form_id: int | None = None
+    form_key: str
+    name: str
+    label: str
+    display_number: str
+    sprite_url: str | None = None
+    is_current: bool = False
+    is_baby: bool = False
+    query: dict[str, str] = Field(default_factory=dict)
+
+
+class EvolutionConditionSource(ApiModel):
+    kind: str
+    label: str
+    url: str | None = None
+    content_hash: str | None = None
+
+
+class EvolutionMethodExplanation(ApiModel):
+    rule_version: str
+    status: Literal["explained", "partial"] = "explained"
+    conditions: list[str] = Field(default_factory=list)
+    notes: list[str] = Field(default_factory=list)
+    trigger_label: str = ""
+    trigger_name_origin: str = "identifier"
+    version_label: str | None = None
+    version_group: dict[str, Any] | None = None
+    is_default: bool | None = None
+    sources: list[EvolutionConditionSource] = Field(default_factory=list)
+    variables: list[dict[str, Any]] = Field(default_factory=list)
+    supplements: list[dict[str, Any]] = Field(default_factory=list)
+    unresolved: list[str] = Field(default_factory=list)
+
+
+class EvolutionGraphEdge(ApiModel):
+    key: str
+    source: str
+    target: str
+    # OR between methods; every field within a method is kept together (AND).
+    methods: list[dict[str, Any]] = Field(default_factory=list)
+    method_explanations: list[EvolutionMethodExplanation] = Field(default_factory=list)
+
+
+class EvolutionGraph(ApiModel):
+    nodes: list[EvolutionGraphNode] = Field(default_factory=list)
+    edges: list[EvolutionGraphEdge] = Field(default_factory=list)
+    warnings: list[str] = Field(default_factory=list)
+    source_url: str | None = None
 
 
 class MediaAssetOut(ApiModel):
@@ -127,6 +194,33 @@ class PokemonVersionMedia(ApiModel):
     sprites: list[VersionSpriteOut]
 
 
+class PokemonFormOption(ApiModel):
+    key: str
+    pokemon_id: int
+    form_id: int | None = None
+    name: str
+    label: str
+    form_label: str
+    display_number: str
+    is_listed: bool = True
+    is_default: bool = False
+    sprite_url: str | None = None
+    artwork_url: str | None = None
+    types: list[NamedResource] = Field(default_factory=list)
+    sources: list[VersionSpriteOwner] = Field(default_factory=list)
+
+
+class StatChange(ApiModel):
+    generation_id: int
+    name: str
+    localized_name: str
+    previous_name: str
+    previous_localized_name: str
+    old_value: int
+    new_value: int
+    is_split: bool = False
+
+
 class PokemonDetail(PokemonListItem):
     height: int | None = None
     weight: int | None = None
@@ -137,8 +231,15 @@ class PokemonDetail(PokemonListItem):
     genus: str | None = None
     abilities: list[AbilityValue] = Field(default_factory=list)
     stats: list[StatValue] = Field(default_factory=list)
+    base_stat_total: int = 0
+    egg_groups: list[NamedResource] = Field(default_factory=list)
+    gender_rate: int | None = None
+    stat_changes: list[StatChange] = Field(default_factory=list)
+    stat_history_available: bool = False
     forms: list[PokemonFormValue] = Field(default_factory=list)
+    form_options: list[PokemonFormOption] = Field(default_factory=list)
     evolution_chain: list[EvolutionNodeOut] = Field(default_factory=list)
+    evolution_graph: EvolutionGraph = Field(default_factory=EvolutionGraph)
     media: list[MediaAssetOut] = Field(default_factory=list)
 
 

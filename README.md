@@ -2,6 +2,9 @@
 
 Chinese-first, bilingual Pokédex built with Nuxt 3 SSR, FastAPI, and PostgreSQL. It mirrors core PokéAPI resources into a local database and serves normal browsing without calling PokeAPI at request time.
 
+道具与招式列表／抽屉已接入本机开发预览；数据覆盖、价格空值约定、独立媒体归属及验证命令见
+[ITEMS-MOVES.md](ITEMS-MOVES.md)。当前 Docker 前端仍等待用户明确下令更新；现有数据库无需全量同步。
+
 ## Stack
 
 - Frontend: Nuxt 3, Vue 3, TypeScript, Nuxt UI, Tailwind CSS
@@ -49,6 +52,10 @@ Chinese-first, bilingual Pokédex built with Nuxt 3 SSR, FastAPI, and PostgreSQL
 5. Open `http://localhost:8080/zh-Hans`.
 
 ## Local development
+
+For the project-isolated Windows environment, activation, and checks, see
+[`DEV-SETUP.md`](DEV-SETUP.md). Run `scripts/setup-dev.ps1` once, then dot-source
+`scripts/activate-dev.ps1` in each new terminal.
 
 Backend:
 

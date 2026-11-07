@@ -10,6 +10,13 @@ export interface PokemonListItem {
   id: number
   name: string
   localizedName: string
+  speciesId?: number | null
+  nationalDexNumber?: number | null
+  variantIndex?: number | null
+  isListed?: boolean
+  displayNumber?: string
+  variantLabel?: string
+  displayName?: string
   spriteUrl?: string | null
   artworkUrl?: string | null
   types: NamedResource[]
@@ -19,6 +26,7 @@ export interface PokemonListItem {
 }
 
 export interface PaginatedPokemon {
+  dataVersion?: string | null
   items: PokemonListItem[]
   page: number
   pageSize: number
@@ -64,6 +72,59 @@ export interface EvolutionNodeOut {
   children: EvolutionNodeOut[]
 }
 
+export interface EvolutionGraphNode {
+  key: string
+  speciesId: number
+  pokemonId: number
+  formId: number | null
+  formKey: string
+  name: string
+  label: string
+  displayNumber: string
+  spriteUrl: string | null
+  isCurrent: boolean
+  isBaby: boolean
+  query: Record<string, string>
+}
+
+export interface EvolutionGraphEdge {
+  key: string
+  source: string
+  target: string
+  methods: Record<string, unknown>[]
+  methodExplanations?: EvolutionMethodExplanation[]
+}
+
+export interface EvolutionMethodExplanation {
+  ruleVersion: string
+  status: 'explained' | 'partial'
+  conditions: string[]
+  notes: string[]
+  triggerLabel: string
+  triggerNameOrigin: string
+  versionLabel: string | null
+  versionGroup: Record<string, unknown> | null
+  isDefault: boolean | null
+  sources: { kind: string; label: string; url: string | null; contentHash: string | null }[]
+  variables: Record<string, unknown>[]
+  supplements: {
+    id: number
+    source_url: string
+    corroborating_url: string
+    scope: { version_group_ids: number[]; zh: string; en: string }[]
+    scope_note_zh: string
+    scope_note_en: string
+  }[]
+  unresolved: string[]
+}
+
+export interface EvolutionGraph {
+  nodes: EvolutionGraphNode[]
+  edges: EvolutionGraphEdge[]
+  warnings: string[]
+  sourceUrl: string | null
+}
+
 export interface MediaAssetOut {
   kind: string
   url: string
@@ -100,6 +161,33 @@ export interface PokemonVersionMedia {
   sprites: VersionSpriteOut[]
 }
 
+export interface PokemonFormOption {
+  key: string
+  pokemonId: number
+  formId?: number | null
+  name: string
+  label: string
+  formLabel: string
+  displayNumber: string
+  isListed: boolean
+  isDefault: boolean
+  spriteUrl?: string | null
+  artworkUrl?: string | null
+  types: NamedResource[]
+  sources: VersionSpriteOwner[]
+}
+
+export interface StatChange {
+  generationId: number
+  name: string
+  localizedName: string
+  previousName: string
+  previousLocalizedName: string
+  oldValue: number
+  newValue: number
+  isSplit: boolean
+}
+
 export interface PokemonDetail extends PokemonListItem {
   height?: number | null
   weight?: number | null
@@ -110,8 +198,15 @@ export interface PokemonDetail extends PokemonListItem {
   genus?: string | null
   abilities: AbilityValue[]
   stats: StatValue[]
+  baseStatTotal?: number
+  eggGroups?: NamedResource[]
+  genderRate?: number | null
+  statChanges?: StatChange[]
+  statHistoryAvailable?: boolean
   forms: PokemonFormValue[]
+  formOptions: PokemonFormOption[]
   evolutionChain: EvolutionNodeOut[]
+  evolutionGraph: EvolutionGraph
   media: MediaAssetOut[]
 }
 

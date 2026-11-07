@@ -165,6 +165,9 @@ class PokeApiImporter:
                     payloads["pokemon"], payloads["pokemon-form"]
                 )
                 self.counts["versionSprites"] = await self._mirror_versions()
+            from pokedex_api.services.search_index import rebuild_indexes
+
+            self.counts["searchIndexVersion"] = await rebuild_indexes(self.session, force=True)
             sync_run.status = "success"
             sync_run.counts = self.counts
             from datetime import UTC, datetime
@@ -197,6 +200,10 @@ class PokeApiImporter:
         ):
             async for batch in self._source_payload_batches(resource_type, 30):
                 total += await self._mirror_asset_payloads(batch, owner_type=owner_type)
+        from pokedex_api.services.search_index import rebuild_indexes
+
+        await rebuild_indexes(self.session)
+        await self.session.commit()
         return {"status": "success", "media": total}
 
     async def _mirror_versions(self) -> dict[str, Any]:
@@ -598,7 +605,7 @@ class PokeApiImporter:
             ) -> None:
                 species_id = resource_id_from_url(node["species"]["url"])
                 details = node.get("evolution_details") or [{}]
-                condition = details[0] if details else {}
+                condition = {"alternatives": details}
                 evolution_node = EvolutionNode(
                     chain_id=bound_chain_id,
                     species_id=species_id,
