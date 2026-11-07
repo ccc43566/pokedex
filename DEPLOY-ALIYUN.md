@@ -8,14 +8,21 @@
 
 这个项目由 4 个容器组成，真正需要搬到服务器的东西只有三样：
 
-| 内容 | 大小 | 说明 |
-| --- | --- | --- |
-| 代码 | 约 45MB | 已推到 GitHub，服务器 `git clone` 就能拿到，不用手动传 |
-| 数据库 `pokedex.dump` | 48MB | 必须传。恢复后网站才有宝可梦数据 |
-| 核心图片 `media-core.tar` | 380MB | 必须传。宝可梦立绘、形态图 |
-| 历史图鉴 `media-version-sprites.tar` | 24.4GB | **可选**。各世代游戏原版像素图，先不要传 |
+| 内容                               | 大小     | 说明                                    |
+| -------------------------------- | ------ | ------------------------------------- |
+| 代码                               | 约 45MB | 已推到 GitHub，服务器 `git clone` 就能拿到，不用手动传 |
+| 数据库 `pokedex.dump`               | 48MB   | 必须传。恢复后网站才有宝可梦数据                      |
+| 核心图片 `media-core.tar`            | 380MB  | 必须传。宝可梦立绘、形态图                         |
+| 程序镜像 `pokedex-images.tar`        | 371MB  | 必须传。本机构建好的 4 个镜像，`docker load` 直接导入  |
+| 历史图鉴 `media-version-sprites.tar` | 24.4GB | **可选**。各世代游戏原版像素图，先不要传                |
 
-**镜像不用传。** 服务器上会从源代码重新构建（几百 MB），比传镜像包可靠。
+合计需要上传 **约 800MB**。
+
+### 为什么传镜像，而不是在服务器上构建
+
+服务器的网络拉不到国外的镜像仓库。实测 `ghcr.io` 约 10KB/s，1119 秒只下完了 28MB 里的 11MB，几小时也拉不完。另外 2 核 4G 构建 Nuxt 有被系统 OOM 杀掉的风险。
+
+本机 64 核构建只要 76 秒，打成一个 371MB 的包传过去，`docker load` 几秒导入，服务器全程不碰外网。
 
 ### 关于那 24.4GB 的历史图鉴
 
@@ -44,15 +51,17 @@
 3. **入方向** 标签 → 右上角 **手动添加**
 4. 填：
 
-| 字段 | 值 |
-| --- | --- |
+| 字段 | 值           |
+| -- | ----------- |
 | 目的 | `3000/3000` |
-| 源 | `0.0.0.0/0` |
+| 源  | `0.0.0.0/0` |
 | 描述 | pokedex-web |
 
-5. 保存
+1. 保存
 
 > 端口为什么是 3000 不是 80？因为大陆服务器用未备案域名/IP 访问 80 端口容易被拦，3000 是干净的。以后备案了域名，再把 `APP_PORT` 改成 80 即可。
+
+
 
 ---
 
@@ -114,9 +123,18 @@ Workbench 网页上传大文件容易断，用 WinSCP 更稳，支持断点续�
 ```
 pokedex.dump
 media-core.tar
+pokedex-images.tar
 ```
 
-> 这两个文件合计 428MB。按家宽 20Mbps 上行算约 3 分钟，慢一点也不会超过 15 分钟。中途断了右键文件选「续传」。
+> 这三个文件合计 799MB。按家宽 20Mbps 上行算约 6 分钟，慢一点半小时内也能完。中途断了右键文件选「续传」。
+
+传完在服务器上校验一下，确认没传坏：
+
+```bash
+cd /opt/pokedex/data && sha256sum pokedex.dump media-core.tar pokedex-images.tar
+```
+
+对照本机 `_deploy\SHA256SUMS.txt` 里的值，一致就继续。
 
 如果你还想要历史图鉴，同一个目录下的 `media-version-sprites.tar`（24.4GB）也拖过去——**但先确认已经扩容磁盘**。
 
@@ -124,16 +142,23 @@ media-core.tar
 
 ## 5. 一键部署
 
-回到 Workbench（第 2 步的网页终端）：
+回到 Workbench（第 2 步的网页终端），先导入镜像：
+
+```bash
+cd /opt/pokedex/data
+docker load -i pokedex-images.tar
+```
+
+应该看到 4 行 `Loaded image: ...`。然后执行部署：
 
 ```bash
 cd /opt/pokedex
-bash deploy/deploy.sh 115.29.208.75
+SKIP_BUILD=1 bash deploy/deploy.sh 115.29.208.75
 ```
 
-脚本会自动完成：生成带随机密码的 `.env` → 构建镜像 → 启动数据库 → 恢复备份 → 解压图片 → 启动服务 → 健康检查。
+脚本会自动完成：生成带随机密码的 `.env` → 检查镜像 → 启动数据库 → 恢复备份 → 解压图片 → 启动服务 → 健康检查。
 
-首次执行大约 **8~20 分钟**（大头是下载基础镜像和构建 Nuxt）。
+全程 **3~8 分钟**，因为不用构建、不用联网下载任何东西。
 
 看到这段就成功了：
 
@@ -148,11 +173,21 @@ bash deploy/deploy.sh 115.29.208.75
 
 ## 6. 如果卡住了
 
-### 构建时卡在拉取镜像 / 报 `i/o timeout`、`connection refused`
+### `docker load` 报错 / 找不到镜像
 
-大陆服务器拉 Docker Hub 和 ghcr.io 经常失败。按顺序试：
+先确认文件完整（大小 389,xxx,xxx 字节左右）：
 
-**① 配置阿里云镜像加速器**
+```bash
+ls -lh /opt/pokedex/data/pokedex-images.tar
+docker load -i /opt/pokedex/data/pokedex-images.tar
+docker images
+```
+
+`docker images` 里应该能看到 `pokedex-api`、`pokedex-web`、`pgvector/pgvector`、`caddy`（名字带 `public.ecr.aws/` 前缀）。
+
+### 以后想在服务器上重新构建镜像（可选，比较折腾）
+
+服务器直接 `docker compose build` 会卡在拉取国外镜像。需要先配置阿里云镜像加速器：
 
 控制台 → 容器镜像服务 ACR → 管理控制台 → 镜像工具 → 镜像加速器，复制你的专属地址，然后在服务器上：
 
@@ -166,23 +201,31 @@ EOF
 systemctl daemon-reload && systemctl restart docker
 ```
 
-**② 如果 `ghcr.io/astral-sh/uv` 这个镜像仍然拉不下来**（它是 api 镜像的基础镜像），换成国内可达的基础镜像。把 `apps/api/Dockerfile` 第一行改成：
+但加速器只对 Docker Hub 生效，**`ghcr.io` 不在覆盖范围内**，而 api 镜像的基础镜像就在 ghcr 上。所以要改成用 Docker Hub 的 `python:3.13-slim`。把 `apps/api/Dockerfile` 前几行改成：
 
 ```dockerfile
 FROM python:3.13-slim
-```
 
-然后在 `RUN uv sync --frozen --no-dev` 之前补一步安装 uv：
+WORKDIR /app
+ENV UV_COMPILE_BYTECODE=1 \
+    UV_LINK_MODE=copy \
+    PYTHONUNBUFFERED=1 \
+    UV_DEFAULT_INDEX=https://mirrors.aliyun.com/pypi/simple
 
-```dockerfile
 COPY pyproject.toml uv.lock README.md ./
 COPY src ./src
 RUN pip install --no-cache-dir -i https://mirrors.aliyun.com/pypi/simple uv && uv sync --frozen --no-dev
 ```
 
-改完重新跑 `bash deploy/deploy.sh 115.29.208.75`。
+前端那侧同样把 `public.ecr.aws/docker/library/node:24-alpine` 改成 `node:24-alpine`，并在 `pnpm install` 前加：
 
-### 构建到一半进程被杀 / `Killed`
+```dockerfile
+RUN corepack pnpm config set registry https://registry.npmmirror.com
+```
+
+改完再跑 `bash deploy/deploy.sh 115.29.208.75`（不加 `SKIP_BUILD=1`）。
+
+### 构建到一半进程被杀 / `Killed`（只在服务器上自建镜像时才会遇到）
 
 2 核 4G 构建 Nuxt 内存不够。加 2GB 交换分区：
 
@@ -241,12 +284,28 @@ df -h                                  # 查磁盘，注意 / 的使用率
 
 **改代码后更新网站：**
 
+服务器上不能直接 rebuild（拉不到国外镜像），所以还是走「本地构建 → 传镜像」：
+
+本机（Windows）：
+
+```powershell
+cd D:\Documents\ChatGPT\Pokedex\pokedex
+git add -A && git commit -m "update" && git push
+docker compose build api web
+docker save -o D:\Documents\ChatGPT\Pokedex\_deploy\pokedex-images.tar `
+  pokedex-api:latest pokedex-web:latest
+```
+
+用 WinSCP 把 `pokedex-images.tar` 覆盖传到 `/opt/pokedex/data/`，然后服务器上：
+
 ```bash
 cd /opt/pokedex
 git pull
-docker compose build web api
+docker load -i data/pokedex-images.tar
 docker compose up -d api web caddy
 ```
+
+只改前端的话，`docker save` 里只写 `pokedex-web:latest` 就行，包会小很多（约 130MB）。
 
 **备份数据库（建议每周一次）：**
 

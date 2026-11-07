@@ -65,15 +65,27 @@ EOF
 fi
 
 # ---------- 2. 构建镜像 ----------
-step "2/6 构建镜像（首次约 5-15 分钟）"
-docker compose build
+step "2/6 准备镜像"
+if [ "${SKIP_BUILD:-0}" = "1" ]; then
+  echo "SKIP_BUILD=1，跳过构建，使用已导入的镜像"
+  for img in pokedex-api pokedex-web; do
+    if ! docker image inspect "$img" >/dev/null 2>&1; then
+      echo "找不到镜像 $img，请先执行: gunzip -c data/pokedex-images.tar.gz | docker load"
+      exit 1
+    fi
+    echo "  已有镜像 $img"
+  done
+else
+  echo "开始构建 api / web（首次约 5-15 分钟）"
+  docker compose build api web
+fi
 
 # ---------- 3. 启动数据库 ----------
 step "3/6 启动数据库"
 docker compose up -d db
 echo -n "等待数据库就绪"
 for i in $(seq 1 60); do
-  if docker compose exec -T db pg_isready -U pokedex -d pokedex >/dev/null 2>&1; then
+  if docker compose exec -T db sh -c 'pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"' >/dev/null 2>&1; then
     echo " ... 就绪"
     break
   fi
@@ -88,8 +100,9 @@ done
 
 # ---------- 4. 恢复数据库 ----------
 step "4/6 恢复数据库"
-TABLE_EXISTS=$(docker compose exec -T db psql -U pokedex -d pokedex -tAc \
-  "select to_regclass('public.pokemon') is not null" 2>/dev/null | tr -d '[:space:]' || echo "f")
+TABLE_EXISTS=$(docker compose exec -T db sh -c \
+  'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -tAc "select to_regclass('"'"'public.pokemon'"'"') is not null"' \
+  2>/dev/null | tr -d '[:space:]' || echo "f")
 
 if [ -f "data/pokedex.dump" ]; then
   if [ "$TABLE_EXISTS" = "t" ]; then
@@ -109,19 +122,21 @@ fi
 step "5/6 解压图片资源"
 VOL_MEDIA="$(docker volume ls --format '{{.Name}}' | grep -E '_pokedex_media$' | head -1 || true)"
 if [ -z "$VOL_MEDIA" ]; then
-  echo "找不到 media 数据卷，请先执行: docker compose up -d db"
-  exit 1
+  echo "media 数据卷尚未创建，将由下面的解压步骤自动创建"
+else
+  echo "目标数据卷: $VOL_MEDIA"
 fi
-echo "目标数据卷: $VOL_MEDIA"
 
 if [ -f "data/media-core.tar" ]; then
-  EXISTING=$(docker run --rm -v "$VOL_MEDIA:/m" alpine:3.20 sh -c 'ls /m 2>/dev/null | wc -l' 2>/dev/null || echo 0)
+  # 用已经构建好的 api 镜像来解压，避免额外依赖外网镜像
+  EXISTING=$(docker compose run --rm --no-deps --entrypoint sh api -c \
+    'ls -A /app/media 2>/dev/null | wc -l' 2>/dev/null | tr -d '[:space:]' || echo 0)
   if [ "${EXISTING:-0}" -gt 0 ]; then
     echo "数据卷里已有文件，跳过核心图片解压"
   else
     echo "正在解压 data/media-core.tar（约 380MB）..."
-    docker run --rm -v "$VOL_MEDIA:/m" -v "$ROOT/data:/backup:ro" alpine:3.20 \
-      tar -C /m -xf /backup/media-core.tar
+    docker compose run --rm --no-deps -v "$ROOT/data:/backup:ro" api \
+      tar -C /app/media -xf /backup/media-core.tar
     echo "核心图片解压完成"
   fi
 else
@@ -134,8 +149,8 @@ if [ -f "data/media-version-sprites.tar" ]; then
     echo "需要历史图鉴时执行: SKIP_VERSION_SPRITES=0 bash deploy/deploy.sh $SITE_HOST"
   else
     echo "正在解压历史图鉴图片（24GB，耗时较长）..."
-    docker run --rm -v "$VOL_MEDIA:/m" -v "$ROOT/data:/backup:ro" alpine:3.20 \
-      tar -C /m -xf /backup/media-version-sprites.tar
+    docker compose run --rm --no-deps -v "$ROOT/data:/backup:ro" api \
+      tar -C /app/media -xf /backup/media-version-sprites.tar
     echo "历史图鉴图片解压完成"
   fi
 fi
