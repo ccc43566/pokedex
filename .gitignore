@@ -19,5 +19,8 @@ data/postgres/
 data/version-media/
 data/media/*
 !data/media/.gitkeep
+data/*.dump
+data/*.tar
+backups/
 *.log
 .DS_Store
