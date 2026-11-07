@@ -64,20 +64,24 @@ EOF
   echo "已生成 .env，数据库密码为随机值（保存在 .env 里，请自行备份）"
 fi
 
-# ---------- 2. 构建镜像 ----------
+# ---------- 2. 准备镜像 ----------
 step "2/6 准备镜像"
-if [ "${SKIP_BUILD:-0}" = "1" ]; then
-  echo "SKIP_BUILD=1，跳过构建，使用已导入的镜像"
+# 默认使用导入的镜像。服务器的网络拉不到 ghcr.io / PyPI，
+# 在这里构建几乎必然卡死，必须显式 BUILD=1 才会尝试。
+if [ "${BUILD:-0}" = "1" ]; then
+  echo "BUILD=1，在服务器上构建 api / web（需要能访问 ghcr.io）"
+  docker compose build api web
+else
+  echo "使用已导入的镜像（如需在服务器上构建，请加 BUILD=1）"
   for img in pokedex-api pokedex-web; do
     if ! docker image inspect "$img" >/dev/null 2>&1; then
-      echo "找不到镜像 $img，请先执行: gunzip -c data/pokedex-images.tar.gz | docker load"
+      echo ""
+      echo "找不到镜像 $img。请先导入："
+      echo "  docker load -i /opt/pokedex/data/pokedex-images.tar"
       exit 1
     fi
     echo "  已有镜像 $img"
   done
-else
-  echo "开始构建 api / web（首次约 5-15 分钟）"
-  docker compose build api web
 fi
 
 # ---------- 3. 启动数据库 ----------

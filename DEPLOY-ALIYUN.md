@@ -153,7 +153,7 @@ docker load -i pokedex-images.tar
 
 ```bash
 cd /opt/pokedex
-SKIP_BUILD=1 bash deploy/deploy.sh 115.29.208.75
+bash deploy/deploy.sh 115.29.208.75
 ```
 
 脚本会自动完成：生成带随机密码的 `.env` → 检查镜像 → 启动数据库 → 恢复备份 → 解压图片 → 启动服务 → 健康检查。
@@ -173,12 +173,23 @@ SKIP_BUILD=1 bash deploy/deploy.sh 115.29.208.75
 
 ## 6. 如果卡住了
 
-### `docker load` 报错 / 找不到镜像
+### 上次构建卡死了，先清干净
 
-先确认文件完整（大小 389,xxx,xxx 字节左右）：
+在服务器上构建会卡在拉取国外镜像或 PyPI 依赖，中断后留下构建缓存和半成品容器，占磁盘。清一下：
 
 ```bash
-ls -lh /opt/pokedex/data/pokedex-images.tar
+cd /opt/pokedex
+docker compose down --remove-orphans    # 注意：不要加 -v
+docker builder prune -f                 # 清掉构建缓存，能腾出 1~3GB
+df -h /
+```
+
+### `docker load` 报错 / 找不到镜像
+
+先确认文件完整（`pokedex-images.tar` 应该是 **389,010,432 字节**）：
+
+```bash
+ls -l /opt/pokedex/data/pokedex-images.tar
 docker load -i /opt/pokedex/data/pokedex-images.tar
 docker images
 ```
@@ -223,7 +234,7 @@ RUN pip install --no-cache-dir -i https://mirrors.aliyun.com/pypi/simple uv && u
 RUN corepack pnpm config set registry https://registry.npmmirror.com
 ```
 
-改完再跑 `bash deploy/deploy.sh 115.29.208.75`（不加 `SKIP_BUILD=1`）。
+改完再跑 `BUILD=1 bash deploy/deploy.sh 115.29.208.75`（不加 `BUILD=1` 时脚本会用导入的镜像，不构建）。
 
 ### 构建到一半进程被杀 / `Killed`（只在服务器上自建镜像时才会遇到）
 
