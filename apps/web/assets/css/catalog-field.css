@@ -1,0 +1,66 @@
+.catalog-brand { display:inline-flex; align-items:center; padding:3px 0 6px; text-decoration:none; }
+.catalog-brand:focus-visible { outline:2px solid #568465; outline-offset:4px; border-radius:5px; }
+/* The removed sort field leaves four controls; reuse the existing grid widths. */
+@container (min-width:1100px) { .dex-filter-grid { grid-template-columns: minmax(0,1.5fr) repeat(2,minmax(0,1fr)) auto; } }
+.catalog-field { position:relative; isolation:isolate; --catalog-accent:#3E6650; --catalog-line:#D3DFD5; --ui-primary:#3E6650; }
+.catalog-field > header,.catalog-field > main,.catalog-field > footer { position:relative; z-index:1; }
+.catalog-field > header { position:sticky; z-index:40; border-color:var(--catalog-line); background:#ffffffed; }
+.catalog-field > main { min-height:calc(100vh - 150px); }
+.catalog-field .dex-filter-form { border:1px solid var(--catalog-line); border-radius:12px; box-shadow:0 3px 12px #273d3010; background:#fffffff5; padding:18px; }
+.catalog-field .dex-filter-grid { align-items:center; gap:12px; }
+.catalog-field .dex-filter-search input,
+.catalog-field .type-select__trigger,
+.catalog-field .dex-filter-grid > button[role='combobox'] { min-height:42px; border-radius:8px; background:#F8FAF8; box-shadow:inset 0 0 0 1px #DCE5DD; border:0; color:#3B5143; }
+.catalog-field .type-select__neutral { min-width:0; padding-left:3px; color:#4F6256; font-size:13px; }
+.catalog-field .dex-filter-actions { gap:8px; }
+.catalog-field .dex-filter-actions button { min-height:40px; border-radius:8px; justify-content:center; padding-inline:16px; font-size:13px; }
+.catalog-field .dex-filter-actions button[type='submit'] { background:var(--catalog-accent); color:#fff; }
+.catalog-field .dex-filter-clear,.catalog-field .dex-filter-more { background:#EDF2ED; color:#4D6556; }
+.catalog-field .dex-filter-flags { margin-top:16px; padding-top:0; border-top:0; gap:22px; }
+.catalog-field .catalog-nav__link { padding:10px 17px; }
+.catalog-field .catalog-nav__link svg { display:block; }
+.catalog-field .catalog-nav__link.is-active { color:var(--catalog-accent); }
+.catalog-field .dex-filter-form--stuck { border-radius:0 0 12px 12px; }
+/* A: warm daylight greens; a broad contour stays behind the page margin. */
+.catalog-field { background:#EEF4EC; }
+/* One viewport-sized composited raster; never repaint a fixed image on a long page. */
+.catalog-wallpaper { position:fixed; inset:0; z-index:0; pointer-events:none; contain:strict; transform:translateZ(0); background:linear-gradient(125deg,#E8EFE5 0%,#F7F9F4 43%,#EEF4EC 100%); }
+.catalog-wallpaper::before { content:''; position:absolute; inset:0; pointer-events:none; background:repeating-radial-gradient(circle at 100% 0,transparent 0 85px,#76947b14 85px 86px); mask-image:linear-gradient(to left,#000,transparent 65%); }
+.catalog-field .catalog-nav { padding:4px; background:#EEF3EC; border:1px solid #E3EBDF; border-radius:12px; gap:2px; }
+.catalog-field .catalog-nav__link { border-radius:8px; }
+.catalog-field .catalog-nav__link.is-active { background:#fff; box-shadow:0 1px 4px #243b2d10; }
+.catalog-field .catalog-nav--enhanced .catalog-nav__link.is-active { background:transparent;box-shadow:none; }
+@container (min-width:900px) { .catalog-field .dex-filter-grid { grid-template-columns:minmax(0,1.7fr) minmax(0,1fr) minmax(0,1fr) auto; } }
+@container (min-width:500px) and (max-width:899px) {
+  .catalog-field .dex-filter-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .catalog-field .dex-filter-search { grid-column:1 / -1; }
+  .catalog-field .dex-filter-actions { grid-column:1 / -1; justify-content:flex-end; }
+}
+@media(max-width:767px) {
+  .catalog-field .catalog-nav { width:100%; padding:3px; gap:2px; }
+  .catalog-field .catalog-nav__link { gap:5px; padding:9px 5px; font-size:12px; }
+  .catalog-field .dex-filter-form { padding:13px; }
+  .catalog-field .dex-filter-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px; }
+  .catalog-field .dex-filter-search,.catalog-field .dex-filter-actions { grid-column:1 / -1; }
+  .catalog-field .dex-filter-actions button { flex:1; }
+  .catalog-field .dex-filter-flags { gap:12px; font-size:12px; }
+  .catalog-field .dex-filter-form--stuck:not(.dex-filter-form--expanded) .dex-filter-grid { grid-template-columns:minmax(0,1fr) auto; }
+  .catalog-field .dex-filter-form--stuck:not(.dex-filter-form--expanded) .dex-filter-search { grid-column:1; }
+  .catalog-field .dex-filter-form--stuck:not(.dex-filter-form--expanded) .dex-filter-actions { grid-column:2; }
+  .catalog-field .dex-filter-form--stuck.dex-filter-form--expanded .dex-filter-actions { grid-row:auto; }
+}
+/* The Pokémon directory has search, type and actions; no generation dropdown. */
+.catalog-field .pokemon-catalog .dex-filter-grid{grid-template-columns:minmax(0,1.7fr) minmax(180px,1fr) auto}
+.catalog-field .pokemon-catalog .dex-filter-type{padding:4px;border:1px solid #E3EBDF;background:#EEF3EC;border-radius:12px}
+.catalog-field .pokemon-catalog .dex-filter-type .type-select__trigger{justify-content:flex-start;gap:10px;min-height:34px;padding-inline:12px;border-radius:8px;background:#fff;box-shadow:0 1px 4px #243b2d10;color:var(--catalog-accent)}
+.catalog-field .pokemon-catalog .dex-filter-type .type-select__neutral{padding-left:0;color:var(--catalog-accent);font-weight:650}
+.catalog-field .pokemon-catalog .dex-filter-type .type-select__chevron{margin-left:auto;color:var(--catalog-accent)}
+.catalog-field .pokemon-catalog .dex-filter-type :focus-visible{outline:2px solid var(--catalog-accent);outline-offset:3px}
+@media(max-width:767px){
+  .catalog-field .pokemon-catalog .dex-filter-grid{grid-template-columns:minmax(0,1fr) auto}
+  .catalog-field .pokemon-catalog .dex-filter-search{grid-column:1 / -1}
+  .catalog-field .pokemon-catalog .dex-filter-type{grid-column:1}
+  .catalog-field .pokemon-catalog .dex-filter-actions{grid-column:2}
+  .catalog-field .pokemon-catalog .dex-filter-form--stuck:not(.dex-filter-form--expanded) .dex-filter-search{grid-column:1}
+  .catalog-field .pokemon-catalog .dex-filter-form--stuck.dex-filter-form--expanded .dex-filter-actions{grid-row:auto}
+}

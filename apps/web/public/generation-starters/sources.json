@@ -1,0 +1,245 @@
+[
+  {
+    "id": 1,
+    "game": "scarlet-violet",
+    "kind": "icons/front_default",
+    "width": 80,
+    "height": 90,
+    "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-ix/scarlet-violet/icons/1.png",
+    "localMedia": "/media/version-sprites/6e/6e9ebb4b988b900059e674ae317b29f81ab1114410ac75ef049255c488a80a69.png"
+  },
+  {
+    "id": 4,
+    "game": "scarlet-violet",
+    "kind": "icons/front_default",
+    "width": 96,
+    "height": 109,
+    "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-ix/scarlet-violet/icons/4.png",
+    "localMedia": "/media/version-sprites/59/59f2de404a32d27c2172eb143baa26cd83cff2f7815ee2c13ab72bd38355a26f.png"
+  },
+  {
+    "id": 7,
+    "game": "scarlet-violet",
+    "kind": "icons/front_default",
+    "width": 97,
+    "height": 107,
+    "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-ix/scarlet-violet/icons/7.png",
+    "localMedia": "/media/version-sprites/a4/a445ff586372bfa0bcd4767ccbf7f439299687032211bdf3c78c688c41216d15.png"
+  },
+  {
+    "id": 152,
+    "game": "scarlet-violet",
+    "kind": "icons/front_default",
+    "width": 71,
+    "height": 126,
+    "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-ix/scarlet-violet/icons/152.png",
+    "localMedia": "/media/version-sprites/76/76b8121173f5044d4f3cf530d2ed7b9fbc428a97261ac820138ef26cf60c8a85.png"
+  },
+  {
+    "id": 155,
+    "game": "scarlet-violet",
+    "kind": "icons/front_default",
+    "width": 91,
+    "height": 111,
+    "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-ix/scarlet-violet/icons/155.png",
+    "localMedia": "/media/version-sprites/50/50f93d7dbf0eb3f617a9e671f980260e264f201ace22f201cde27a273f7a1a80.png"
+  },
+  {
+    "id": 158,
+    "game": "scarlet-violet",
+    "kind": "icons/front_default",
+    "width": 92,
+    "height": 106,
+    "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-ix/scarlet-violet/icons/158.png",
+    "localMedia": "/media/version-sprites/2c/2caf1404c981d3b980d739dc41b1e7a0892876d8da874be663a0d8d13a8e5063.png"
+  },
+  {
+    "id": 252,
+    "game": "scarlet-violet",
+    "kind": "icons/front_default",
+    "width": 94,
+    "height": 111,
+    "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-ix/scarlet-violet/icons/252.png",
+    "localMedia": "/media/version-sprites/cf/cfe7bb89ae1ab2e67864d290e28cfa918d06ef5eb4a0df6e4230e61e555da4ea.png"
+  },
+  {
+    "id": 255,
+    "game": "scarlet-violet",
+    "kind": "icons/front_default",
+    "width": 68,
+    "height": 124,
+    "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-ix/scarlet-violet/icons/255.png",
+    "localMedia": "/media/version-sprites/bd/bd876496d72734e37067c790ed2fc5f582eaaccd0c034b714403348c8ac2cefd.png"
+  },
+  {
+    "id": 258,
+    "game": "scarlet-violet",
+    "kind": "icons/front_default",
+    "width": 89,
+    "height": 128,
+    "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-ix/scarlet-violet/icons/258.png",
+    "localMedia": "/media/version-sprites/67/67f17093945f7248ce489ea69d0700975391fca8b97c96d0847a8eeb1fd26a91.png"
+  },
+  {
+    "id": 387,
+    "game": "scarlet-violet",
+    "kind": "icons/front_default",
+    "width": 83,
+    "height": 112,
+    "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-ix/scarlet-violet/icons/387.png",
+    "localMedia": "/media/version-sprites/ea/eafd55ae1219efb0c3cb971ad7af27e48ca9800db7538985b49c8b03c00337a9.png"
+  },
+  {
+    "id": 390,
+    "game": "scarlet-violet",
+    "kind": "icons/front_default",
+    "width": 71,
+    "height": 130,
+    "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-ix/scarlet-violet/icons/390.png",
+    "localMedia": "/media/version-sprites/4d/4d9f7308c7734a5348623369b7a18f99c941553a602dcb1c9aeafe437a6584f9.png"
+  },
+  {
+    "id": 393,
+    "game": "scarlet-violet",
+    "kind": "icons/front_default",
+    "width": 81,
+    "height": 107,
+    "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-ix/scarlet-violet/icons/393.png",
+    "localMedia": "/media/version-sprites/af/af0c3b02dff93ecf52e0dfb570a3d258a9b2b6898b0ca1ce660414d11d60d615.png"
+  },
+  {
+    "id": 495,
+    "game": "scarlet-violet",
+    "kind": "icons/front_default",
+    "width": 91,
+    "height": 108,
+    "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-ix/scarlet-violet/icons/495.png",
+    "localMedia": "/media/version-sprites/bb/bb5f1bcf9565ecd7098eddc2fc403f17da0025c5e9a3938b5fa6c608b326f746.png"
+  },
+  {
+    "id": 498,
+    "game": "scarlet-violet",
+    "kind": "icons/front_default",
+    "width": 82,
+    "height": 108,
+    "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-ix/scarlet-violet/icons/498.png",
+    "localMedia": "/media/version-sprites/22/22d9f90e50ed9dcd8d1f484f4cd8f0de1e1e929a13fea7ef3d1110b68d863a21.png"
+  },
+  {
+    "id": 501,
+    "game": "scarlet-violet",
+    "kind": "icons/front_default",
+    "width": 73,
+    "height": 109,
+    "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-ix/scarlet-violet/icons/501.png",
+    "localMedia": "/media/version-sprites/d1/d14a1e5a305f1a859640344b06feb5eff566694b49d9fa84aa2bea43fda7796e.png"
+  },
+  {
+    "id": 650,
+    "game": "scarlet-violet",
+    "kind": "icons/front_default",
+    "width": 83,
+    "height": 110,
+    "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-ix/scarlet-violet/icons/650.png",
+    "localMedia": "/media/version-sprites/ff/ffa2c36023050f9c14c9c75fed18a51c7924a013fcf8c446325c9d03d008bc4a.png"
+  },
+  {
+    "id": 653,
+    "game": "scarlet-violet",
+    "kind": "icons/front_default",
+    "width": 102,
+    "height": 109,
+    "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-ix/scarlet-violet/icons/653.png",
+    "localMedia": "/media/version-sprites/7b/7bd6f87b2af48a898d08c41707c2eb08e5277e35be3b95e0285431bd3e2a1fd9.png"
+  },
+  {
+    "id": 656,
+    "game": "scarlet-violet",
+    "kind": "icons/front_default",
+    "width": 87,
+    "height": 108,
+    "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-ix/scarlet-violet/icons/656.png",
+    "localMedia": "/media/version-sprites/ff/ff116344780f1c4c3ed17c38170418f9875ab2fd6af8e0f45d5c1af485da732c.png"
+  },
+  {
+    "id": 722,
+    "game": "scarlet-violet",
+    "kind": "icons/front_default",
+    "width": 92,
+    "height": 110,
+    "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-ix/scarlet-violet/icons/722.png",
+    "localMedia": "/media/version-sprites/bf/bf8a701d5f6d156260c396961f3d639b2a8cd7333b050769d7c2e622c2b9a7ae.png"
+  },
+  {
+    "id": 725,
+    "game": "scarlet-violet",
+    "kind": "icons/front_default",
+    "width": 110,
+    "height": 107,
+    "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-ix/scarlet-violet/icons/725.png",
+    "localMedia": "/media/version-sprites/a3/a338e38a80532f2361cd3a93a0a666ad60c4f65753eb78956a4122bb010a2bd6.png"
+  },
+  {
+    "id": 728,
+    "game": "scarlet-violet",
+    "kind": "icons/front_default",
+    "width": 110,
+    "height": 105,
+    "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-ix/scarlet-violet/icons/728.png",
+    "localMedia": "/media/version-sprites/43/43ac3fd1e45b6a3963f25e14caddb73c5bab6ba13515c411ebb619220525df38.png"
+  },
+  {
+    "id": 810,
+    "game": "scarlet-violet",
+    "kind": "icons/front_default",
+    "width": 83,
+    "height": 110,
+    "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-ix/scarlet-violet/icons/810.png",
+    "localMedia": "/media/version-sprites/e8/e87ddb61e9c14ae15e891ee42f8b24dcfeb4ba03ddcd683435c407186584a5dd.png"
+  },
+  {
+    "id": 813,
+    "game": "scarlet-violet",
+    "kind": "icons/front_default",
+    "width": 69,
+    "height": 125,
+    "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-ix/scarlet-violet/icons/813.png",
+    "localMedia": "/media/version-sprites/30/30078c8e1549ed8e543601fd782be97afa5e7a25cf365335a46e956bc51ad193.png"
+  },
+  {
+    "id": 816,
+    "game": "scarlet-violet",
+    "kind": "icons/front_default",
+    "width": 63,
+    "height": 109,
+    "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-ix/scarlet-violet/icons/816.png",
+    "localMedia": "/media/version-sprites/4a/4a312b5c6847c6909d9915f48715e13df5c1e1ed56fd99b51f9e33a21ad10a30.png"
+  },
+  {
+    "id": 906,
+    "game": "scarlet-violet",
+    "kind": "icons/front_default",
+    "width": 82,
+    "height": 109,
+    "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-ix/scarlet-violet/icons/906.png",
+    "localMedia": "/media/version-sprites/89/89d87e6d4883034e4aa9cdf7cea50ed9b04172d8762f28a559cbc163205d9c18.png"
+  },
+  {
+    "id": 909,
+    "game": "scarlet-violet",
+    "kind": "icons/front_default",
+    "width": 76,
+    "height": 119,
+    "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-ix/scarlet-violet/icons/909.png",
+    "localMedia": "/media/version-sprites/fb/fbdbe77b2662a1119f427c88928a061be279359974c43dffe767f28796598112.png"
+  },
+  {
+    "id": 912,
+    "game": "scarlet-violet",
+    "kind": "icons/front_default",
+    "width": 74,
+    "height": 115,
+    "sourceUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-ix/scarlet-violet/icons/912.png",
+    "localMedia": "/media/version-sprites/3b/3b5c6b71244095ec650c0a58c2dc7833743effd6604ed0eb0abd3c7cbba0d257.png"
+  }
+]

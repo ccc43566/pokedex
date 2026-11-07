@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="zh-Hans">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light" />
+    <title>种族值 · 组件预览</title>
+    <style>
+      :root {
+        font-family: Arial, "Microsoft YaHei", "PingFang SC", sans-serif;
+        color: #252525;
+        background: #f4f6f7;
+        font-synthesis: none;
+        --hp: #82bd7a;
+        --attack: #f7cf58;
+        --defense: #f3b04e;
+        --special-attack: #60b8f1;
+        --special-defense: #66a9ef;
+        --speed: #a457ba;
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; }
+      button, input { font: inherit; }
+      button { cursor: pointer; }
+      button:focus-visible, input:focus-visible {
+        outline: 2px solid #3e6650;
+        outline-offset: 4px;
+      }
+      .preview { max-width: 1224px; padding: 40px 32px 32px; margin: 0 auto; }
+      .preview-header { margin-bottom: 28px; }
+      .preview-header h1 { margin: 0; font-size: 24px; line-height: 1.4; }
+      .preview-header p { margin: 10px 0 0; font-size: 14px; line-height: 1.8; color: #69716c; }
+      .workspace { display: grid; grid-template-columns: minmax(0, 1fr) 304px; gap: 32px; align-items: start; }
+      .canvas { min-width: 0; }
+      .sample-switch { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+      .sample-switch button {
+        border: 1px solid #dce3de; border-radius: 7px; padding: 9px 13px;
+        background: #fff; color: #58665e; font-size: 13px; line-height: 1.3;
+      }
+      .sample-switch button[aria-pressed="true"] { background: #3e6650; border-color: #3e6650; color: #fff; }
+      .stage { display: grid; justify-items: center; align-items: start; padding: 20px 0 28px; }
+
+      /* The component itself: no track, reserved value column or minimum fill width. */
+      .stats-card {
+        container-type: inline-size;
+        width: min(100%, var(--preview-width, 520px));
+        padding: clamp(22px, 4vw, 40px);
+        border-radius: 20px;
+        background: #fff;
+      }
+      .stats-card h2 {
+        margin: 0 0 clamp(25px, 7cqi, 42px);
+        text-align: center;
+        font-size: clamp(28px, 8cqi, 42px);
+        line-height: 1.2;
+        font-weight: 750;
+      }
+      .stats-list { list-style: none; margin: 0; padding: 0; display: grid; gap: clamp(8px, 2.2cqi, 12px); }
+      .stat-row, .stats-total {
+        position: relative;
+        isolation: isolate;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-width: 0;
+        height: clamp(44px, 14cqi, 72px);
+        padding: 0 clamp(5px, 1.4cqi, 8px);
+      }
+      .stat-fill {
+        position: absolute;
+        inset: 0 auto 0 0;
+        width: calc(var(--value) / 255 * 100%);
+        border-radius: clamp(8px, 2.4cqi, 12px);
+        background: var(--stat-color);
+        z-index: 0;
+        pointer-events: none;
+      }
+      .stat-name, .stat-value {
+        position: relative;
+        z-index: 1;
+        font-size: clamp(24px, 7.5cqi, 40px);
+        line-height: 1;
+        white-space: nowrap;
+      }
+      .stat-name { color: #222; font-weight: 400; mix-blend-mode: multiply; }
+      .stat-name--hp { font-family: Arial, sans-serif; font-weight: 900; letter-spacing: .01em; }
+      .stat-value {
+        margin-left: auto;
+        color: #757575;
+        font-family: Arial, sans-serif;
+        font-weight: 800;
+        font-variant-numeric: tabular-nums;
+        letter-spacing: .045em;
+        mix-blend-mode: multiply;
+      }
+      .stats-total { margin-top: clamp(8px, 2.2cqi, 12px); }
+      .stats-total .stat-name { font-weight: 400; }
+
+      .controls { background: #fff; border: 1px solid #e0e6e2; border-radius: 12px; padding: 22px; }
+      .controls h2 { font-size: 15px; line-height: 1.5; margin: 0 0 8px; }
+      .controls > p { color: #738078; font-size: 12px; line-height: 1.8; margin: 0 0 22px; }
+      .editor { display: grid; gap: 18px; }
+      .edit-field { display: grid; grid-template-columns: minmax(0, 1fr) 62px; align-items: center; gap: 9px 12px; }
+      .edit-field label { font-size: 13px; display: flex; align-items: center; gap: 8px; }
+      .edit-field label::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--stat-color); }
+      .edit-field input[type="number"] {
+        width: 100%; height: 30px; border: 1px solid #dce3de; border-radius: 5px;
+        padding: 4px 5px 4px 8px; background: #fff; color: #33443a; font-size: 13px;
+      }
+      .edit-field input[type="range"] { grid-column: 1 / -1; width: 100%; margin: 0; accent-color: var(--stat-color); cursor: pointer; }
+      .width-control { margin-top: 26px; padding-top: 20px; border-top: 1px solid #edf0ed; }
+      .width-control > div { display: flex; justify-content: space-between; font-size: 12px; color: #647369; }
+      .width-control input { margin: 14px 0 0; width: 100%; accent-color: #3e6650; }
+      .color-key { list-style: none; margin: 24px 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px 18px; }
+      .color-key li { display: flex; align-items: center; gap: 8px; font-size: 11px; color: #6e7871; white-space: nowrap; }
+      .color-key i { width: 11px; height: 11px; background: var(--stat-color); border-radius: 3px; flex: none; }
+      .color-key code { display: block; margin-top: 3px; font-size: 10px; letter-spacing: .02em; }
+      .preview-note { color: #7c857f; font-size: 12px; line-height: 1.9; margin: 24px 0 0; }
+      @media (max-width: 850px) {
+        .workspace { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+        .preview { padding: 28px 20px; }
+        .controls { width: min(100%, 520px); justify-self: center; }
+        .editor { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+        .color-key { width: min(100%, 520px); margin-inline: auto; }
+      }
+      @media (max-width: 420px) {
+        .preview { padding: 24px 16px; }
+        .preview-header h1 { font-size: 21px; }
+        .sample-switch { gap: 6px; }
+        .sample-switch button { padding: 8px 10px; font-size: 12px; }
+        .stats-card { padding: 24px; border-radius: 16px; }
+        .editor { grid-template-columns: minmax(0, 1fr); }
+        .controls { padding: 20px; }
+      }
+      @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; } }
+    </style>
+  </head>
+  <body>
+    <main class="preview">
+      <header class="preview-header">
+        <h1>种族值组件预览</h1>
+        <p>沿用参考图的颜色与排列，255 为满宽。可切换示例或自行调节数值。</p>
+      </header>
+      <div class="workspace">
+        <section class="canvas" aria-label="种族值组件预览区域">
+          <div class="sample-switch" role="group" aria-label="选择示例">
+            <button type="button" data-sample="first" aria-pressed="true">参考一 · 600</button>
+            <button type="button" data-sample="second" aria-pressed="false">参考二 · 540</button>
+            <button type="button" data-sample="maximum" aria-pressed="false">全部 255</button>
+          </div>
+          <div class="stage">
+            <article class="stats-card" aria-labelledby="stats-heading">
+              <h2 id="stats-heading">种族值</h2>
+              <ol class="stats-list" id="stats-list"></ol>
+              <div class="stats-total"><span class="stat-name">总和</span><output class="stat-value" id="stats-total" aria-label="种族值总和">600</output></div>
+            </article>
+          </div>
+          <ul class="color-key" id="color-key" aria-label="从参考图片提取的颜色"></ul>
+          <p class="preview-note">名称与数值始终显示在条形上层；短条不会被强行加长，满值条形可延伸到数值下方。</p>
+        </section>
+        <aside class="controls" aria-labelledby="controls-heading">
+          <h2 id="controls-heading">调节预览</h2>
+          <p>每项范围 0–255，总和自动更新。</p>
+          <div class="editor" id="editor"></div>
+          <div class="width-control">
+            <div><label for="component-width">组件宽度</label><output id="width-value" for="component-width">520 px</output></div>
+            <input type="range" id="component-width" min="280" max="640" value="520" step="10" />
+          </div>
+        </aside>
+      </div>
+    </main>
+    <script>
+      const definitions = [
+        { key: 'hp', name: 'HP', color: '#82BD7A' },
+        { key: 'attack', name: '攻击', color: '#F7CF58' },
+        { key: 'defense', name: '防御', color: '#F3B04E' },
+        { key: 'special-attack', name: '特攻', color: '#60B8F1' },
+        { key: 'special-defense', name: '特防', color: '#66A9EF' },
+        { key: 'speed', name: '速度', color: '#A457BA' },
+      ]
+      const samples = {
+        first: [95, 135, 80, 110, 80, 100],
+        second: [255, 10, 10, 75, 135, 55],
+        maximum: [255, 255, 255, 255, 255, 255],
+      }
+      let values = [...samples.first]
+      const list = document.getElementById('stats-list')
+      const editor = document.getElementById('editor')
+      const key = document.getElementById('color-key')
+      definitions.forEach((stat, index) => {
+        list.insertAdjacentHTML('beforeend', `
+          <li class="stat-row" id="stat-${stat.key}" style="--stat-color:${stat.color};--value:${values[index]}" role="meter" aria-label="${stat.name}" aria-valuemin="0" aria-valuemax="255" aria-valuenow="${values[index]}">
+            <span class="stat-fill" aria-hidden="true"></span>
+            <span class="stat-name${index === 0 ? ' stat-name--hp' : ''}">${stat.name}</span>
+            <output class="stat-value" for="edit-${stat.key}" id="value-${stat.key}">${values[index]}</output>
+          </li>`)
+        editor.insertAdjacentHTML('beforeend', `
+          <div class="edit-field" style="--stat-color:${stat.color}">
+            <label for="edit-${stat.key}">${stat.name}</label>
+            <input id="edit-${stat.key}" data-index="${index}" type="number" inputmode="numeric" min="0" max="255" step="1" value="${values[index]}" />
+            <input aria-label="${stat.name}滑动调节" data-index="${index}" type="range" min="0" max="255" step="1" value="${values[index]}" />
+          </div>`)
+        key.insertAdjacentHTML('beforeend', `<li style="--stat-color:${stat.color}"><i aria-hidden="true"></i><span>${stat.name}<code>${stat.color}</code></span></li>`)
+      })
+      function render() {
+        definitions.forEach((stat, index) => {
+          const row = document.getElementById(`stat-${stat.key}`)
+          row.style.setProperty('--value', values[index])
+          row.setAttribute('aria-valuenow', values[index])
+          document.getElementById(`value-${stat.key}`).textContent = values[index]
+          editor.querySelectorAll(`[data-index="${index}"]`).forEach(input => {
+            if (input !== document.activeElement) input.value = values[index]
+          })
+        })
+        document.getElementById('stats-total').textContent = values.reduce((sum, value) => sum + value, 0)
+        document.querySelectorAll('[data-sample]').forEach(button => {
+          button.setAttribute('aria-pressed', String(samples[button.dataset.sample].every((value, index) => value === values[index])))
+        })
+      }
+      document.querySelector('.sample-switch').addEventListener('click', event => {
+        const button = event.target.closest('[data-sample]')
+        if (!button) return
+        values = [...samples[button.dataset.sample]]
+        render()
+      })
+      editor.addEventListener('input', event => {
+        const input = event.target
+        if (!(input instanceof HTMLInputElement) || input.value === '') return
+        const value = Number(input.value)
+        if (!Number.isFinite(value)) return
+        values[Number(input.dataset.index)] = Math.max(0, Math.min(255, Math.round(value)))
+        render()
+      })
+      editor.addEventListener('change', event => {
+        const input = event.target
+        if (input instanceof HTMLInputElement) input.value = values[Number(input.dataset.index)]
+      })
+      document.getElementById('component-width').addEventListener('input', event => {
+        const width = event.target.value
+        document.querySelector('.stats-card').style.setProperty('--preview-width', width + 'px')
+        document.getElementById('width-value').textContent = width + ' px'
+      })
+    </script>
+  </body>
+</html>

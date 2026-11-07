@@ -1,0 +1,92 @@
+[
+  {
+    "type": "normal",
+    "source": "UI/icons/normal.svg",
+    "sha256": "041ff2d74913b98f1e69f14d568929464052ce5a25cab86d2ab8c079a2615a6d"
+  },
+  {
+    "type": "fire",
+    "source": "UI/icons/fire.svg",
+    "sha256": "2fabc56d9ae7bbcd2b280a7cd6141c1504013746d9a7f787ca50ae1fd9e04ab4"
+  },
+  {
+    "type": "water",
+    "source": "UI/icons/water.svg",
+    "sha256": "313ff7795b27b00c6da7a9c6415bb8e81d7006561a167b16d49ca6e470b7d480"
+  },
+  {
+    "type": "electric",
+    "source": "UI/icons/electric.svg",
+    "sha256": "7773c26a587fd696d1c3e8d038306402031f1495c4bc96368ee675fe91214f2e"
+  },
+  {
+    "type": "grass",
+    "source": "UI/icons/grass.svg",
+    "sha256": "aee66d8a2a8efbda6ee90a8c4d081da68d702a4b2fc30bbe1a10cb33f469916d"
+  },
+  {
+    "type": "ice",
+    "source": "UI/icons/ice.svg",
+    "sha256": "584ff007ac92426ff8602384576a518bca27388dcf00533e587be45db43120f4"
+  },
+  {
+    "type": "fighting",
+    "source": "UI/icons/fighting.svg",
+    "sha256": "5defbb897b7ab1977173b00d1def7fd7e6b7a7d74cd74248bfe79f66bddaf774"
+  },
+  {
+    "type": "poison",
+    "source": "UI/icons/poison.svg",
+    "sha256": "9dc33e03bd1362691b6c49d5c8a9cedfc7afc5525f4033f8a779e2c30180865f"
+  },
+  {
+    "type": "ground",
+    "source": "UI/icons/ground.svg",
+    "sha256": "1e8cb8d6b6fc5f6833735fd8dd264f6515ad0ee089d453069d1540f6cb3386a8"
+  },
+  {
+    "type": "flying",
+    "source": "UI/icons/flying.svg",
+    "sha256": "4b7fc15a133c927076df76fbdebb7dec2c62b45cd6d97565787b111728a52c38"
+  },
+  {
+    "type": "psychic",
+    "source": "UI/icons/psychic.svg",
+    "sha256": "c8db378728c2abe09cffe74f03497d183b74a1f0416f0d5cdf8549aba1f66858"
+  },
+  {
+    "type": "bug",
+    "source": "UI/icons/bug.svg",
+    "sha256": "d84099b3d306028cf40063c4f45fa79dd3736eb094134fb0baae02968df27702"
+  },
+  {
+    "type": "rock",
+    "source": "UI/icons/rock.svg",
+    "sha256": "c002f5247d741a011003dea4881bf9188850793ec247516bce82440cdb0f939c"
+  },
+  {
+    "type": "ghost",
+    "source": "UI/icons/ghost.svg",
+    "sha256": "0e6ec189101eadb16752f4f82c8fc7c8a4f05b4180ab9642f25d31bda1a8771e"
+  },
+  {
+    "type": "dragon",
+    "source": "UI/icons/dragon.svg",
+    "sha256": "13c0efc092054a298dc97d56e94494aa9bb13418ba47fe45cbe4881a6e36c65e"
+  },
+  {
+    "type": "dark",
+    "source": "UI/icons/dark.svg",
+    "sha256": "9d292b0a00e5436fbcb3d9a6b1440c3f860cb493a0aad835efafdf3f55b09661"
+  },
+  {
+    "type": "steel",
+    "source": "UI/icons/steel.svg",
+    "sha256": "9b8d9ae7a347a9aa578b18236bb1516b3388fe180f6e1eeadbd934c323f08ed7"
+  },
+  {
+    "type": "fairy",
+    "source": "UI/icons/fairy.svg",
+    "sha256": "afb8681804338331b482853f1ebdc29986bbcd8d4e101284a892854a79eb23d4"
+  }
+]

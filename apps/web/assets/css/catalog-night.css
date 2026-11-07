@@ -1,0 +1,87 @@
+.catalog-header-actions{display:flex;align-items:center;gap:10px}
+.catalog-field[data-mode='day'][data-wallpaper='image'] .catalog-wallpaper{background-image:linear-gradient(#F7F9F455,#EEF4EC88),var(--catalog-wallpaper);background-size:cover;background-position:center}
+/* HTML owns the portal tokens too, so teleported selects match the active mode. */
+html[data-catalog-mode='day']{color-scheme:light;--ui-bg:#fff;--ui-bg-muted:#F8FAFC;--ui-bg-elevated:#F1F5F9;--ui-bg-accented:#E2E8F0;--ui-text:#1B2733;--ui-text-muted:#667685;--ui-text-dimmed:#81909D;--ui-text-toned:#475569;--ui-text-highlighted:#15222D;--ui-border:#CCD7DE;--ui-border-muted:#E2E8F0;--ui-border-accented:#94A3B8}
+html[data-catalog-mode='night']{
+  color-scheme:dark;
+  --dex-paper:#132235;--dex-surface:#1C2B3C;--dex-ink:#E5EDF4;--dex-muted:#ACBDCB;--dex-line:#3A4C60;--dex-accent:#A5CBB0;
+  --ui-bg:#1C2B3C;--ui-bg-muted:#172638;--ui-bg-elevated:#24364B;--ui-bg-accented:#30445B;--ui-bg-inverted:#E5EDF4;
+  --ui-text:#E5EDF4;--ui-text-muted:#ACBDCB;--ui-text-dimmed:#9BAFBE;--ui-text-toned:#CAD8E3;--ui-text-highlighted:#F3F7FA;--ui-text-inverted:#152638;
+  --ui-border:#3A4C60;--ui-border-muted:#304257;--ui-border-accented:#61798E;
+  --appearance-panel:#1C2B3C;--appearance-line:#3A4C60;--appearance-text:#E5EDF4;--appearance-muted:#ACBDCB;--appearance-inset:#142235;--appearance-accent:#A5CBB0;
+  --catalog-panel-bg:#1C2B3C;--catalog-panel-inset:#24364B;--catalog-panel-text:#E5EDF4;--catalog-panel-muted:#ACBDCB;--catalog-panel-line:#3A4C60;--catalog-selected-bg:#304B4B;
+}
+.catalog-field[data-mode='night']{
+  --catalog-accent:#A5CBB0;--catalog-line:#3A4C60;--ui-primary:#A5CBB0;
+  --pokemon-card-paper:color-mix(in srgb,#79CA57 2%,#1C2B3C);
+  --pokemon-card-grid-line:rgba(189,215,225,.035);--pokemon-card-ring-opacity:9%;
+  background-color:#101A2A;
+}
+.catalog-field[data-mode='night'] .catalog-wallpaper{
+  background-color:#101A2A;
+  background-image:linear-gradient(#101A2AC9,#102033E0),var(--catalog-wallpaper);
+  background-position:center,center top;background-size:cover,cover;
+}
+.catalog-field[data-mode='night'] .catalog-wallpaper::before{display:none}
+.catalog-field[data-mode='night']>header{background:#142337F2}
+.catalog-field[data-mode='night']>footer{background:#142337;border-color:#3A4C60;color:#ACBDCB}
+.catalog-field[data-mode='night'] .catalog-nav{background:#1C2E42;border-color:#334A5C}
+.catalog-field[data-mode='night'] .catalog-nav__link{color:#B6C6D2}
+.catalog-field[data-mode='night'] .catalog-nav__link:hover{background:#2B4054;color:#EFF5F8}
+.catalog-field[data-mode='night'] .catalog-nav__link.is-active{background:#304B4B;color:#D8EFDD;box-shadow:none}
+.catalog-field[data-mode='night'] .catalog-nav{--nav-slider-paper:#304B4B}
+.catalog-field[data-mode='night'] .catalog-nav--enhanced .catalog-nav__link.is-active{background:transparent;box-shadow:none}
+.catalog-field[data-mode='night'] .dex-filter-form{background:#192B3EF5;border-color:#3A4C60;box-shadow:0 3px 14px #0000001A}
+.catalog-field[data-mode='night'] .dex-filter-search input,
+.catalog-field[data-mode='night'] .type-select__trigger,
+.catalog-field[data-mode='night'] .dex-filter-grid>button[role='combobox']{background:#132337;color:#D8E5ED;box-shadow:inset 0 0 0 1px #40566A}
+.catalog-field[data-mode='night'] input::placeholder{color:#9BAEBF}
+.catalog-field[data-mode='night'] .type-select__neutral{color:#D0DDE7}
+.catalog-field[data-mode='night'] .type-select__chevron{color:#A6BDCE}
+.catalog-field[data-mode='night'] .dex-filter-actions button[type='submit']{background:#A5CBB0;color:#152B21}
+.catalog-field[data-mode='night'] .dex-filter-clear,.catalog-field[data-mode='night'] .dex-filter-more{background:#2B4054;color:#D9E6EC}
+.catalog-field[data-mode='night'] .dex-filter-flags{border-color:#344B5D}
+.catalog-field[data-mode='night'] .pokemon-card__number{background:#304358;color:#DDEAF2}
+.catalog-field[data-mode='night'] .pokemon-card--selected .pokemon-card__number{background:#A5CBB0;color:#152B21}
+.catalog-field[data-mode='night'] .pokemon-card__form-label{color:#B6C6D2}
+.catalog-field[data-mode='night'] .pokemon-card__special--legendary{background:#51482A;color:#FFE1A0}
+.catalog-field[data-mode='night'] .pokemon-card__special--mythical{background:#45394F;color:#EDD8FA}
+.catalog-field[data-mode='night'] .pokemon-card__selected-label{background:#A5CBB0;color:#152B21}
+html[data-catalog-mode='night'] .text-slate-400,html[data-catalog-mode='night'] .text-slate-500{color:#ACBDCB}
+html[data-catalog-mode='night'] .text-slate-600,html[data-catalog-mode='night'] .text-slate-700{color:#C3D2DF}
+html[data-catalog-mode='night'] .border-slate-200{border-color:#3A4C60}
+html[data-catalog-mode='night'] .type-select__panel{background:#1C2B3C;border-color:#3A4C60;box-shadow:0 12px 32px #0006}
+html[data-catalog-mode='night'] .type-select__neutral{color:#D0DDE7}
+html[data-catalog-mode='night'] .type-select__option:hover{background:#2B4054}
+html[data-catalog-mode='night'] .type-select__option[aria-selected='true']{background:#304B4B;border-color:#A5CBB0}
+html[data-catalog-mode='night'] .card-background-control{color:#E5EDF4}
+html[data-catalog-mode='night'] .card-background-trigger,html[data-catalog-mode='night'] .card-background-panel{background:#1C2B3CF5;border-color:#3A4C60;color:#E5EDF4}
+html[data-catalog-mode='night'] .card-background-trigger>svg{color:#A5CBB0}
+html[data-catalog-mode='night'] .card-background-trigger b{border-color:#3A4C60}
+html[data-catalog-mode='night'] .card-background-heading button,html[data-catalog-mode='night'] .card-background-scale{color:#ACBDCB}
+html[data-catalog-mode='night'] .card-background-panel p{color:#C6D6DF}
+html[data-catalog-mode='night'] .card-background-panel .card-background-note{color:#ACBDCB}
+html[data-catalog-mode='night'] .card-background-presets button{border-color:#465D6D}
+html[data-catalog-mode='night'] .card-background-presets button[aria-pressed=true]{background:#304B4B;border-color:#A5CBB0;color:#D8EFDD}
+html[data-catalog-mode='night'] .card-background-panel input{accent-color:#A5CBB0}
+/* Shared secondary surfaces, including detail drawers and reference lists. */
+html[data-catalog-mode='night'] .bg-white{background-color:#1C2B3C}
+html[data-catalog-mode='night'] .bg-slate-50,html[data-catalog-mode='night'] .bg-slate-100{background-color:#24364B}
+html[data-catalog-mode='night'] .detail-drawer,html[data-catalog-mode='night'] .detail-drawer__toolbar{background:#192B3E;color:#E5EDF4;border-color:#3A4C60}
+html[data-catalog-mode='night'] .detail-sheet{color:#E5EDF4;--pokemon-stat-value:#fff}
+html[data-catalog-mode='night'] .detail-sheet [data-stat-total],html[data-catalog-mode='night'] .detail-sheet [data-stat-history] .tabular-nums{color:#fff}
+html[data-catalog-mode='night'] .detail-sheet__hero,html[data-catalog-mode='night'] .detail-sheet__section,html[data-catalog-mode='night'] .detail-form-select{background:#1C2B3C;color:#E5EDF4;border-color:#3A4C60}
+html[data-catalog-mode='night'] .detail-sheet__art{background:#132337}
+html[data-catalog-mode='night'] .detail-sheet__number{background:#304358}
+html[data-catalog-mode='night'] .detail-sheet__metrics dt,html[data-catalog-mode='night'] [class~='text-[#667685]']{color:#ACBDCB}
+html[data-catalog-mode='night'] [class~='text-[#344554]']{color:#CAD8E3}
+html[data-catalog-mode='night'] .detail-sheet__form{border-color:#3A4C60}
+html[data-catalog-mode='night'] .detail-sheet__form--current{background:#304B4B;border-color:#A5CBB0}
+html[data-catalog-mode='night'] .evolution-node,html[data-catalog-mode='night'] .evolution-method{background:#24364B;color:#E5EDF4;border-color:#3A4C60}
+html[data-catalog-mode='night'] .evolution-node--current{background:#304B4B}
+html[data-catalog-mode='night'] .ref-button{background:#304358;color:#D9E6EC}
+@media(max-width:600px){.catalog-header-actions{gap:6px}.catalog-header-actions .catalog-language{width:90px}}
+@media(max-width:360px){.catalog-field .catalog-brand .site-logo{font-size:25px}.catalog-header-actions{gap:4px}.catalog-header-actions .catalog-language{width:80px}}
+.catalog-field[data-mode='night'] .pokemon-catalog .dex-filter-type{background:#1C2E42;border-color:#334A5C}
+.catalog-field[data-mode='night'] .pokemon-catalog .dex-filter-type .type-select__trigger{background:#304B4B;color:#D8EFDD;box-shadow:none}
+.catalog-field[data-mode='night'] .pokemon-catalog .dex-filter-type .type-select__neutral,.catalog-field[data-mode='night'] .pokemon-catalog .dex-filter-type .type-select__chevron{color:#D8EFDD}

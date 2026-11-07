@@ -1,0 +1,639 @@
+[
+  {
+    "id": 711,
+    "name": "南瓜怪人",
+    "englishName": "Gourgeist（Average Size）",
+    "slug": "gourgeist-average",
+    "displayNumber": "711",
+    "sprite": "/media/version-sprites/2e/2e4f67742585cd308041c7dd4e4c8ae7c8484f2ab7bbda37360f2baed3a60c80.png",
+    "types": [
+      {
+        "id": 8,
+        "name": "ghost",
+        "localizedName": "幽灵"
+      },
+      {
+        "id": 12,
+        "name": "grass",
+        "localizedName": "草"
+      }
+    ],
+    "animation": null
+  },
+  {
+    "id": 710,
+    "name": "南瓜精",
+    "englishName": "Pumpkaboo（Average Size）",
+    "slug": "pumpkaboo-average",
+    "displayNumber": "710",
+    "sprite": "/media/version-sprites/01/01cb843a07b4207828c84fa6466f60359e2378aaa5e227f37fe6ed0675ff1a6f.png",
+    "types": [
+      {
+        "id": 8,
+        "name": "ghost",
+        "localizedName": "幽灵"
+      },
+      {
+        "id": 12,
+        "name": "grass",
+        "localizedName": "草"
+      }
+    ],
+    "animation": null
+  },
+  {
+    "id": 778,
+    "name": "谜拟丘",
+    "englishName": "Mimikyu（Disguised）",
+    "slug": "mimikyu-disguised",
+    "displayNumber": "778",
+    "sprite": "/media/version-sprites/62/6207835e48f86fdeded3d90932b22562c889375b13e532c6b0a40e270a6a0a6a.png",
+    "types": [
+      {
+        "id": 8,
+        "name": "ghost",
+        "localizedName": "幽灵"
+      },
+      {
+        "id": 18,
+        "name": "fairy",
+        "localizedName": "妖精"
+      }
+    ],
+    "animation": {
+      "path": "/media/version-sprites/96/96f0da8a1b9df740fb86da038965389714636dce8446a802383d7c13e04794d3.gif",
+      "width": 96,
+      "height": 96
+    }
+  },
+  {
+    "id": 94,
+    "name": "耿鬼",
+    "englishName": "Gengar",
+    "slug": "gengar",
+    "displayNumber": "94",
+    "sprite": "/media/version-sprites/00/00ad4a589f9fc1a88f77dcd512477e2e124ec4030b01d8e786700fad14d38ead.png",
+    "types": [
+      {
+        "id": 8,
+        "name": "ghost",
+        "localizedName": "幽灵"
+      },
+      {
+        "id": 4,
+        "name": "poison",
+        "localizedName": "毒"
+      }
+    ],
+    "animation": {
+      "path": "/media/version-sprites/a6/a6abb74d994fbc18581c519bfe047743c9523c3a30898c48d3536c3f3f0683ad.gif",
+      "width": 74,
+      "height": 63
+    }
+  },
+  {
+    "id": 607,
+    "name": "烛光灵",
+    "englishName": "Litwick",
+    "slug": "litwick",
+    "displayNumber": "607",
+    "sprite": "/media/version-sprites/b6/b6cdf4ea364bec06f3a8041c677f088937f723e61937f1fb9c12be8c3b24d402.png",
+    "types": [
+      {
+        "id": 8,
+        "name": "ghost",
+        "localizedName": "幽灵"
+      },
+      {
+        "id": 10,
+        "name": "fire",
+        "localizedName": "火"
+      }
+    ],
+    "animation": {
+      "path": "/media/version-sprites/c9/c92e5dbdc90ca483193ae512688d3bf170f4d643e9878a0224c76f8392e7e26d.gif",
+      "width": 32,
+      "height": 44
+    }
+  },
+  {
+    "id": 608,
+    "name": "灯火幽灵",
+    "englishName": "Lampent",
+    "slug": "lampent",
+    "displayNumber": "608",
+    "sprite": "/media/version-sprites/9b/9bb40474a8526edeb0a8a4b3280eeb6f3fbc245bea52e01ed9168f5407b837b5.png",
+    "types": [
+      {
+        "id": 8,
+        "name": "ghost",
+        "localizedName": "幽灵"
+      },
+      {
+        "id": 10,
+        "name": "fire",
+        "localizedName": "火"
+      }
+    ],
+    "animation": {
+      "path": "/media/version-sprites/7c/7cbcd82caf5f1aec0ca47d2660459b0c353ba4aaa9ae79c1f545cec8e4bcd738.gif",
+      "width": 67,
+      "height": 64
+    }
+  },
+  {
+    "id": 609,
+    "name": "水晶灯火灵",
+    "englishName": "Chandelure",
+    "slug": "chandelure",
+    "displayNumber": "609",
+    "sprite": "/media/version-sprites/32/32ad9ca97bae7d50d45b8f420187391a0237e79a9c199285026f734f8af28a7c.png",
+    "types": [
+      {
+        "id": 8,
+        "name": "ghost",
+        "localizedName": "幽灵"
+      },
+      {
+        "id": 10,
+        "name": "fire",
+        "localizedName": "火"
+      }
+    ],
+    "animation": {
+      "path": "/media/version-sprites/6d/6d5be038f918992a9be2a8833047d060dc9a215e271634b45946bc15e3d9e7c9.gif",
+      "width": 92,
+      "height": 90
+    }
+  },
+  {
+    "id": 708,
+    "name": "小木灵",
+    "englishName": "Phantump",
+    "slug": "phantump",
+    "displayNumber": "708",
+    "sprite": "/media/version-sprites/82/824bdbe160cbb6b79982c345ea51c1ba7ffbf2f4737a2ca7313c08cd88a3a1e4.png",
+    "types": [
+      {
+        "id": 8,
+        "name": "ghost",
+        "localizedName": "幽灵"
+      },
+      {
+        "id": 12,
+        "name": "grass",
+        "localizedName": "草"
+      }
+    ],
+    "animation": {
+      "path": "/media/version-sprites/4e/4efe12d803388220a1424ef3090a5f722ef7cec8c2f45aa1bdf3e6f2fdc55d03.gif",
+      "width": 70,
+      "height": 63
+    }
+  },
+  {
+    "id": 709,
+    "name": "朽木妖",
+    "englishName": "Trevenant",
+    "slug": "trevenant",
+    "displayNumber": "709",
+    "sprite": "/media/version-sprites/d3/d3c2ba9f00fd0c3fe897f933c1bb93348b34134ffab508ec23b3245c12a6c9d5.png",
+    "types": [
+      {
+        "id": 8,
+        "name": "ghost",
+        "localizedName": "幽灵"
+      },
+      {
+        "id": 12,
+        "name": "grass",
+        "localizedName": "草"
+      }
+    ],
+    "animation": {
+      "path": "/media/version-sprites/49/49b0a3ef9712403879c141d1ddff765c92667544c7a3c493d16bafa830b98254.gif",
+      "width": 96,
+      "height": 96
+    }
+  },
+  {
+    "id": 353,
+    "name": "怨影娃娃",
+    "englishName": "Shuppet",
+    "slug": "shuppet",
+    "displayNumber": "353",
+    "sprite": "/media/version-sprites/28/285f1412565bccc780bfca049b905c81b97883f5127dfc51978e91cb500bf565.png",
+    "types": [
+      {
+        "id": 8,
+        "name": "ghost",
+        "localizedName": "幽灵"
+      }
+    ],
+    "animation": {
+      "path": "/media/version-sprites/44/44d6d3b2fdc4f12b4d7514d76931782201460c1018a09523d659391d9374859e.gif",
+      "width": 39,
+      "height": 58
+    }
+  },
+  {
+    "id": 354,
+    "name": "诅咒娃娃",
+    "englishName": "Banette",
+    "slug": "banette",
+    "displayNumber": "354",
+    "sprite": "/media/version-sprites/b0/b0a44403c62f0d27936b19df0e1e8e469652822da754f0f1720aaec428a4a371.png",
+    "types": [
+      {
+        "id": 8,
+        "name": "ghost",
+        "localizedName": "幽灵"
+      }
+    ],
+    "animation": {
+      "path": "/media/version-sprites/9e/9ec1c9731332603b8535c72df91346ba63b3f673203624317fa31ba2597b14fc.gif",
+      "width": 55,
+      "height": 51
+    }
+  },
+  {
+    "id": 355,
+    "name": "夜巡灵",
+    "englishName": "Duskull",
+    "slug": "duskull",
+    "displayNumber": "355",
+    "sprite": "/media/version-sprites/e8/e88da5bd59942db67e978d06203d649756f4e8255ce2fc0c45e827c430c274b2.png",
+    "types": [
+      {
+        "id": 8,
+        "name": "ghost",
+        "localizedName": "幽灵"
+      }
+    ],
+    "animation": {
+      "path": "/media/version-sprites/3e/3e70e981ba95f2f66b12a42facdecc4cdd9a5ae173ff420dce1a5b80deecbea4.gif",
+      "width": 51,
+      "height": 45
+    }
+  },
+  {
+    "id": 356,
+    "name": "彷徨夜灵",
+    "englishName": "Dusclops",
+    "slug": "dusclops",
+    "displayNumber": "356",
+    "sprite": "/media/version-sprites/a7/a7ef10de7bea51e6db55551b5dec4ad335c44ebc8cac20b97a87cbe8d341fa1c.png",
+    "types": [
+      {
+        "id": 8,
+        "name": "ghost",
+        "localizedName": "幽灵"
+      }
+    ],
+    "animation": {
+      "path": "/media/version-sprites/b0/b01406bbe6fe4ac8ec6ae433fdb930eae8d9bd5e1c2782ee74baa8294ec47e99.gif",
+      "width": 84,
+      "height": 70
+    }
+  },
+  {
+    "id": 477,
+    "name": "黑夜魔灵",
+    "englishName": "Dusknoir",
+    "slug": "dusknoir",
+    "displayNumber": "477",
+    "sprite": "/media/version-sprites/12/12977e53941197dc519a448b0d90ddb5761f91a8864637bee1639cf687b96961.png",
+    "types": [
+      {
+        "id": 8,
+        "name": "ghost",
+        "localizedName": "幽灵"
+      }
+    ],
+    "animation": {
+      "path": "/media/version-sprites/9b/9b56bdee104094811ddbff94cee1a5290f2efec2b490385c3ec794850b342a4f.gif",
+      "width": 74,
+      "height": 75
+    }
+  },
+  {
+    "id": 92,
+    "name": "鬼斯",
+    "englishName": "Gastly",
+    "slug": "gastly",
+    "displayNumber": "92",
+    "sprite": "/media/version-sprites/ea/eaed759213fab01f32b8814d7a2ae8e12ce5d8501001888ad8315da3286dfe3c.png",
+    "types": [
+      {
+        "id": 8,
+        "name": "ghost",
+        "localizedName": "幽灵"
+      },
+      {
+        "id": 4,
+        "name": "poison",
+        "localizedName": "毒"
+      }
+    ],
+    "animation": {
+      "path": "/media/version-sprites/3a/3a4481e91eef77b99a643b423de4d924b939907a31216aa5a27bf62a1b7b9aed.gif",
+      "width": 67,
+      "height": 75
+    }
+  },
+  {
+    "id": 93,
+    "name": "鬼斯通",
+    "englishName": "Haunter",
+    "slug": "haunter",
+    "displayNumber": "93",
+    "sprite": "/media/version-sprites/8f/8f0a50e396bb5e0a975afa8a7beb84f1b58544e7acc4c38dad34bf679b755617.png",
+    "types": [
+      {
+        "id": 8,
+        "name": "ghost",
+        "localizedName": "幽灵"
+      },
+      {
+        "id": 4,
+        "name": "poison",
+        "localizedName": "毒"
+      }
+    ],
+    "animation": {
+      "path": "/media/version-sprites/a6/a69e1517170a6e74dca52f487081581607009a7134a3bf16d34c06cd170c4027.gif",
+      "width": 85,
+      "height": 69
+    }
+  },
+  {
+    "id": 200,
+    "name": "梦妖",
+    "englishName": "Misdreavus",
+    "slug": "misdreavus",
+    "displayNumber": "200",
+    "sprite": "/media/version-sprites/79/79c0c494bc50bcd74780a366bcf0e425b4e48016b2545ecd3eb3f7ad96ad4030.png",
+    "types": [
+      {
+        "id": 8,
+        "name": "ghost",
+        "localizedName": "幽灵"
+      }
+    ],
+    "animation": {
+      "path": "/media/version-sprites/1f/1f0d3ecf865bf5e7f649fafb7238cdd94e019bb3d5db3688f14154cba5a7a842.gif",
+      "width": 50,
+      "height": 57
+    }
+  },
+  {
+    "id": 429,
+    "name": "梦妖魔",
+    "englishName": "Mismagius",
+    "slug": "mismagius",
+    "displayNumber": "429",
+    "sprite": "/media/version-sprites/dc/dc921bd452148330efeab31089cdccd15c9609b272cb9a7c631d1ef3913df629.png",
+    "types": [
+      {
+        "id": 8,
+        "name": "ghost",
+        "localizedName": "幽灵"
+      }
+    ],
+    "animation": {
+      "path": "/media/version-sprites/af/afd8e50260c90b74ae08868b99a80f03fe62da64246646f8331106c5798fd947.gif",
+      "width": 61,
+      "height": 84
+    }
+  },
+  {
+    "id": 425,
+    "name": "飘飘球",
+    "englishName": "Drifloon",
+    "slug": "drifloon",
+    "displayNumber": "425",
+    "sprite": "/media/version-sprites/64/64ce6b1d2fe49d4b9173ff2d78e08359d2c8adbe35085eef7efc2415f9cdede9.png",
+    "types": [
+      {
+        "id": 8,
+        "name": "ghost",
+        "localizedName": "幽灵"
+      },
+      {
+        "id": 3,
+        "name": "flying",
+        "localizedName": "飞行"
+      }
+    ],
+    "animation": {
+      "path": "/media/version-sprites/50/5046dc62a6ac5c38ea180bdde465c1eceaf7f4cd1b37773ac67517567094c8ef.gif",
+      "width": 56,
+      "height": 69
+    }
+  },
+  {
+    "id": 426,
+    "name": "随风球",
+    "englishName": "Drifblim",
+    "slug": "drifblim",
+    "displayNumber": "426",
+    "sprite": "/media/version-sprites/c5/c5130eefb3858da52950d8e35742ceae443e8bb729cb7228aa32f32862fdb3d4.png",
+    "types": [
+      {
+        "id": 8,
+        "name": "ghost",
+        "localizedName": "幽灵"
+      },
+      {
+        "id": 3,
+        "name": "flying",
+        "localizedName": "飞行"
+      }
+    ],
+    "animation": {
+      "path": "/media/version-sprites/71/71cce6806a08387184b5806d2ee0c5072e7373a33fa0237eae0c527c4809e375.gif",
+      "width": 73,
+      "height": 72
+    }
+  },
+  {
+    "id": 302,
+    "name": "勾魂眼",
+    "englishName": "Sableye",
+    "slug": "sableye",
+    "displayNumber": "302",
+    "sprite": "/media/version-sprites/05/0580531dc8fb6d289386e4cf9d53d015460eaa2eb31888c20cc1b8df42b34b94.png",
+    "types": [
+      {
+        "id": 17,
+        "name": "dark",
+        "localizedName": "恶"
+      },
+      {
+        "id": 8,
+        "name": "ghost",
+        "localizedName": "幽灵"
+      }
+    ],
+    "animation": {
+      "path": "/media/version-sprites/36/36d2efbd7b448abaf4d2657e4b1bc02f379958b52c3dcefe479b1926c90177ce.gif",
+      "width": 43,
+      "height": 49
+    }
+  },
+  {
+    "id": 442,
+    "name": "花岩怪",
+    "englishName": "Spiritomb",
+    "slug": "spiritomb",
+    "displayNumber": "442",
+    "sprite": "/media/version-sprites/43/4311b00d96c7f96ad2cbc1c28712c7cf7935d6162efdf03102a4c86e90ef9ee3.png",
+    "types": [
+      {
+        "id": 8,
+        "name": "ghost",
+        "localizedName": "幽灵"
+      },
+      {
+        "id": 17,
+        "name": "dark",
+        "localizedName": "恶"
+      }
+    ],
+    "animation": {
+      "path": "/media/version-sprites/19/194b5c9317a1d9cd17d293ef4037742ec7e3a6cae252d1d68766796d40be35dd.gif",
+      "width": 66,
+      "height": 63
+    }
+  },
+  {
+    "id": 562,
+    "name": "哭哭面具",
+    "englishName": "Yamask",
+    "slug": "yamask",
+    "displayNumber": "562",
+    "sprite": "/media/version-sprites/78/78ab97f18015021c1724f9cce0fb6f572cac42347c641ddc1cb942c9c483f259.png",
+    "types": [
+      {
+        "id": 8,
+        "name": "ghost",
+        "localizedName": "幽灵"
+      }
+    ],
+    "animation": {
+      "path": "/media/version-sprites/2c/2c9f0529b1ad6e36c560ea1ccc8f6f13d461114bc5a56049e934fb691c30c032.gif",
+      "width": 66,
+      "height": 53
+    }
+  },
+  {
+    "id": 563,
+    "name": "迭失棺",
+    "englishName": "Cofagrigus",
+    "slug": "cofagrigus",
+    "displayNumber": "563",
+    "sprite": "/media/version-sprites/bd/bd0fef2da3a9ecae6961442b7f23f6db5d1d96e8c24499bcfc730ac6b296a026.png",
+    "types": [
+      {
+        "id": 8,
+        "name": "ghost",
+        "localizedName": "幽灵"
+      }
+    ],
+    "animation": {
+      "path": "/media/version-sprites/00/00ed340cccc37ec9ca2cde1fedf60cf0fcc8f8ed50b9183de93cbea7952309f0.gif",
+      "width": 114,
+      "height": 89
+    }
+  },
+  {
+    "id": 41,
+    "name": "超音蝠",
+    "englishName": "Zubat",
+    "slug": "zubat",
+    "displayNumber": "41",
+    "sprite": "/media/version-sprites/e8/e861d2a3681cc814eafe4a934e1ee7f37cb5c7e849fb3189b4e65d14d63076be.png",
+    "types": [
+      {
+        "id": 4,
+        "name": "poison",
+        "localizedName": "毒"
+      },
+      {
+        "id": 3,
+        "name": "flying",
+        "localizedName": "飞行"
+      }
+    ],
+    "animation": {
+      "path": "/media/version-sprites/87/87549d298eb48231fe9cbd036455a67bf59786be4ebb25c82a2a5a3173c10401.gif",
+      "width": 53,
+      "height": 46
+    }
+  },
+  {
+    "id": 169,
+    "name": "叉字蝠",
+    "englishName": "Crobat",
+    "slug": "crobat",
+    "displayNumber": "169",
+    "sprite": "/media/version-sprites/16/1673ea011d86d22bb77a7515a8e7f615695a578fc8a50c61f6a8c0c81d155838.png",
+    "types": [
+      {
+        "id": 4,
+        "name": "poison",
+        "localizedName": "毒"
+      },
+      {
+        "id": 3,
+        "name": "flying",
+        "localizedName": "飞行"
+      }
+    ],
+    "animation": {
+      "path": "/media/version-sprites/85/859a705625d7a254423544b6a329fffe7bd0f5ee29ab73cfce47d2f3fccd8b64.gif",
+      "width": 105,
+      "height": 73
+    }
+  },
+  {
+    "id": 197,
+    "name": "月亮伊布",
+    "englishName": "Umbreon",
+    "slug": "umbreon",
+    "displayNumber": "197",
+    "sprite": "/media/version-sprites/72/72df4ab24222b470e2d145c0c747b704a4abca4042d739e645a0e37ef7eeaf5c.png",
+    "types": [
+      {
+        "id": 17,
+        "name": "dark",
+        "localizedName": "恶"
+      }
+    ],
+    "animation": {
+      "path": "/media/version-sprites/d4/d430508aa9db128b3a37ca402613c1d027958829288e2ba1acff79e326233aa3.gif",
+      "width": 43,
+      "height": 51
+    }
+  },
+  {
+    "id": 359,
+    "name": "阿勃梭鲁",
+    "englishName": "Absol",
+    "slug": "absol",
+    "displayNumber": "359",
+    "sprite": "/media/version-sprites/e0/e08e8fa7c90d52bbc79859342b1c88f353a80eff273a5ce7d3960a6e8374da38.png",
+    "types": [
+      {
+        "id": 17,
+        "name": "dark",
+        "localizedName": "恶"
+      }
+    ],
+    "animation": {
+      "path": "/media/version-sprites/1e/1e2c7984b0c88382b347fd769f0810c73b727bb63c8aa98201da7de0c359814d.gif",
+      "width": 65,
+      "height": 64
+    }
+  }
+]

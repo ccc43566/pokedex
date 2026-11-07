@@ -1,0 +1,18 @@
+/* Shared interaction language; new action buttons can opt in with ui-press. */
+.ui-press,
+.dex-filter-actions button[type='submit'],
+.dex-filter-clear,
+.reference-actions .ref-button {
+  transition:transform 230ms cubic-bezier(.34,1.56,.64,1),background-color 160ms ease,color 160ms ease;
+  transform-origin:center;
+}
+.ui-press:not(:disabled):active,
+.dex-filter-actions button[type='submit']:not(:disabled):active,
+.dex-filter-clear:not(:disabled):active,
+.reference-actions .ref-button:not(:disabled):active {
+  transform:translateY(1px) scale(.96);
+  transition-duration:75ms;
+}
+@media(prefers-reduced-motion:reduce) {
+  .ui-press,.dex-filter-actions button[type='submit'],.dex-filter-clear,.reference-actions .ref-button {transition:none;transform:none!important}
+}

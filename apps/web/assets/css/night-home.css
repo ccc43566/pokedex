@@ -1,0 +1,2052 @@
+/* Extracted by scripts/generate-night-home-assets.cjs. Home-only selectors. */
+@font-face {
+  font-family: 'Home Baloo';
+  src: url('/home/night/Baloo2-variable.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+}
+.night-home .night-logo {
+  --p-fill: linear-gradient(180deg, #ffffff 0%, #f2f5fc 45%, #c9d3ea 100%);
+  --c-fill: linear-gradient(180deg, #ffe489 0%, #ffc23c 48%, #e8891f 100%);
+  --sh1: #4a2e86;
+  --sh2: #33206a;
+  --sh3: #1e1450;
+  --glow: rgba(255, 196, 84, 0.38);
+  --logo-play-state: running;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0;
+  font-family: 'Home Baloo', 'Arial Rounded MT Bold', sans-serif;
+  font-weight: 800;
+  font-size: 104px;
+  line-height: 1;
+  white-space: nowrap;
+  filter: drop-shadow(0 0.022em 0 var(--sh1)) drop-shadow(0 0.022em 0 var(--sh2))
+    drop-shadow(0 0.028em 0 var(--sh3)) drop-shadow(0 0.1em 0.1em rgba(10, 5, 28, 0.5))
+    drop-shadow(0 0 0.5em var(--glow));
+}
+.night-home .night-logo .word {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0;
+}
+.night-home .night-logo .ch {
+  position: relative;
+  display: inline-block;
+  transform-origin: 50% 100%;
+  background-image: var(--p-fill);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: none;
+}
+.night-home .night-logo .cdx .ch {
+  background-image: var(--c-fill);
+}
+.night-home .night-logo .ch::after {
+  content: attr(data-c);
+  position: absolute;
+  left: 0;
+  top: 0;
+  mix-blend-mode: screen;
+  background-image: linear-gradient(
+    45deg,
+    transparent 41%,
+    rgba(255, 255, 255, 0.1) 45.5%,
+    rgba(255, 255, 255, 0.92) 50%,
+    rgba(255, 255, 255, 0.1) 54.5%,
+    transparent 59%
+  );
+  background-size: 260% 260%;
+  background-repeat: no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  opacity: 0;
+  pointer-events: none;
+}
+.night-home .night-logo[data-playing='true'] {
+  animation: home-logo-float 4.6s ease-in-out 1 both;
+  animation-play-state: var(--logo-play-state);
+}
+.night-home .night-logo[data-playing='true'] .ch {
+  animation: home-logo-wave 2.3s cubic-bezier(0.3, 0.85, 0.4, 1) 2 both;
+  animation-delay: calc(var(--i) * 0.07s);
+  animation-play-state: var(--logo-play-state);
+}
+.night-home .night-logo[data-playing='true'] .ch::after {
+  opacity: 1;
+  animation: home-logo-sheen 3.4s linear 1 both;
+  animation-delay: calc(var(--i) * 0.06s);
+  animation-play-state: var(--logo-play-state);
+}
+@keyframes home-logo-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-0.055em);
+  }
+}
+@keyframes home-logo-wave {
+  0%,
+  72%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  16% {
+    transform: translateY(-0.155em) scale(0.945, 1.085);
+  }
+  36% {
+    transform: translateY(0.022em) scale(1.055, 0.925);
+  }
+  54% {
+    transform: translateY(-0.032em) scale(0.985, 1.02);
+  }
+}
+@keyframes home-logo-sheen {
+  0% {
+    background-position: 118% -18%;
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+  }
+  45% {
+    opacity: 1;
+  }
+  55%,
+  100% {
+    background-position: -18% 118%;
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .night-home .night-logo,
+  .night-home .night-logo .ch,
+  .night-home .night-logo .ch::after {
+    animation: none !important;
+  }
+  .night-home .night-logo .ch::after {
+    opacity: 0 !important;
+  }
+}
+
+.night-home {
+  color-scheme: light;
+  --night: #171a33;
+  --mist: #b9a8cf;
+  --warm: #e7a34b;
+  --paper: #272338;
+  --ink: #342d40;
+  --scene-opacity: 1;
+  --art-y: 0px;
+  --moon-y: 0px;
+  --front-y: 0px;
+  --brand-opacity: 1;
+  --copy-opacity: 1;
+  --ambient-state: running;
+}
+
+.night-home * {
+  box-sizing: border-box;
+}
+
+.night-home {
+  overflow-x: clip;
+  scroll-behavior: smooth;
+  scroll-padding-top: 90px;
+}
+
+.night-home {
+  margin: 0;
+  background: var(--paper);
+  font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
+  color: var(--ink);
+  overflow-x: clip;
+}
+
+.night-home a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.night-home button,
+.night-home input,
+.night-home select {
+  font: inherit;
+}
+
+.night-home button,
+.night-home a,
+.night-home input,
+.night-home select,
+.night-home summary {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.night-home button {
+  cursor: pointer;
+}
+
+.night-home button:focus-visible,
+.night-home a:focus-visible,
+.night-home input:focus-visible,
+.night-home select:focus-visible,
+.night-home summary:focus-visible {
+  outline: 3px solid #e7a34b;
+  outline-offset: 5px;
+}
+
+.night-home svg {
+  display: block;
+}
+
+.night-home svg use {
+  stroke: currentColor;
+  stroke-width: 1.6;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.night-home .svg-library {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+.night-home .sr-only {
+  position: absolute;
+  clip: rect(0, 0, 0, 0);
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.night-home .skip-link {
+  position: fixed;
+  top: -70px;
+  left: 16px;
+  z-index: 100;
+  background: #fff;
+  padding: 12px 18px;
+  border-radius: 8px;
+}
+
+.night-home .skip-link:focus {
+  top: 14px;
+}
+
+.night-home .scene {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 1050px;
+  pointer-events: none;
+  overflow: hidden;
+  background: linear-gradient(#171a33 0%, #171a33 75%, #5b506a 88%, var(--paper) 100%);
+}
+
+.night-home .scene-art {
+  position: absolute;
+  inset: 115px 0 0;
+  background: url('/home/night/observatory-night.png') center top/cover no-repeat;
+  opacity: var(--scene-opacity);
+  transform: translateY(var(--art-y));
+  mask-image: linear-gradient(transparent 0%, #000 14%, #000 74%, transparent 97%);
+}
+
+.night-home .scene-shade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, #171a3370 0%, #171a3320 36%, transparent 60%);
+}
+
+.night-home .masthead {
+  overflow: clip;
+  position: relative;
+  z-index: 2;
+  height: 196px;
+  color: #f3eefa;
+}
+
+.night-home .masthead-inner {
+  position: relative;
+  max-width: 1240px;
+  height: 100%;
+  margin: auto;
+  padding: 41px 40px 25px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.night-home .brand-trigger {
+  position: relative;
+  z-index: 2;
+  border: 0;
+  padding: 10px 0 18px;
+  background: none;
+  opacity: var(--brand-opacity);
+}
+
+.night-home .night-logo {
+  font-size: 88px;
+}
+
+.night-home .night-logo--purple {
+  --p-fill: linear-gradient(180deg, #ffffff, #efe8ff 45%, #c9b8e9);
+  --c-fill: linear-gradient(180deg, #d3b5ff, #a171f3 48%, #7540d4);
+  --glow: rgba(174, 114, 255, 0.2);
+}
+
+.night-home .sky {
+  position: absolute;
+  right: 70px;
+  top: 22px;
+  width: 390px;
+  height: 168px;
+  pointer-events: none;
+  transform: translateY(var(--moon-y));
+  opacity: var(--brand-opacity);
+}
+
+.night-home .moon {
+  position: absolute;
+  width: 128px;
+  height: 128px;
+  right: 96px;
+  top: 5px;
+  filter: drop-shadow(0 0 22px #b9a8cf19);
+}
+
+.night-home .cloud {
+  position: absolute;
+  width: 390px;
+  height: 76px;
+  animation: home-cloud-drift 38s ease-in-out infinite alternate;
+  animation-play-state: var(--ambient-state);
+  opacity: 0.5;
+}
+
+.night-home .cloud--back {
+  right: 28px;
+  top: 19px;
+  opacity: 0.36;
+  animation-duration: 48s;
+}
+
+.night-home .cloud--front {
+  right: -35px;
+  top: 95px;
+  opacity: 0.65;
+  animation-direction: alternate-reverse;
+}
+
+@keyframes home-cloud-drift {
+  from {
+    transform: translateX(-16px);
+  }
+  to {
+    transform: translateX(24px);
+  }
+}
+
+.night-home .site-nav {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  color: #e3d9ea;
+  background: #171a3338;
+  border-top: 1px solid #c8b9df19;
+  border-bottom: 1px solid #c8b9df24;
+}
+
+.night-home .nav-inner {
+  height: 62px;
+  max-width: 1160px;
+  margin: auto;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 35px;
+}
+
+.night-home .nav-links {
+  display: flex;
+  align-items: stretch;
+  height: 100%;
+  gap: 36px;
+}
+
+.night-home .nav-links > a {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  position: relative;
+  font-weight: 600;
+  font-size: 15px;
+  padding: 0 2px;
+}
+
+.night-home .nav-links svg {
+  width: 19px;
+  height: 19px;
+  color: #b8a8cb;
+}
+
+.night-home .nav-links .active {
+  color: #f1d29f;
+}
+
+.night-home .nav-links .active:after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  background: #dcaa60;
+}
+
+.night-home .nav-links a:hover {
+  color: #fff3dc;
+}
+
+.night-home .compact-brand {
+  display: none;
+  font:
+    800 25px/1 'Home Baloo',
+    sans-serif;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.night-home .compact-brand span {
+  color: #f0c875;
+}
+
+.night-home.is-scrolled .site-nav {
+  background: #1c1d34f5;
+  box-shadow: 0 5px 18px #0d0e1920;
+}
+
+.night-home.is-scrolled .compact-brand {
+  display: block;
+}
+
+.night-home .hero-intro {
+  position: relative;
+  height: 586px;
+  color: #f3eefa;
+}
+
+.night-home .hero-inner {
+  max-width: 1240px;
+  margin: auto;
+  padding: 66px 40px 0;
+  position: relative;
+  z-index: 4;
+}
+
+.night-home .search-copy {
+  max-width: 465px;
+  opacity: var(--copy-opacity);
+}
+
+.night-home .season-note {
+  font-size: 12px;
+  color: #d3b5b7;
+  letter-spacing: 1px;
+  margin: 0 0 19px;
+}
+
+.night-home .season-note > span {
+  color: #dcaa60;
+  margin-right: 6px;
+}
+
+.night-home h1 {
+  font-size: 35px;
+  line-height: 1.6;
+  font-weight: 600;
+  letter-spacing: 1px;
+  margin: 0 0 14px;
+  text-wrap: balance;
+}
+
+.night-home .hero-description {
+  font-size: 13px;
+  line-height: 1.9;
+  color: #bfb2cd;
+  margin: 0 0 28px;
+}
+
+.night-home #search-form {
+  display: flex;
+  align-items: stretch;
+  gap: 9px;
+  max-width: 455px;
+}
+
+.night-home .search-field {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+.night-home .search-field > svg {
+  position: absolute;
+  left: 16px;
+  top: 17px;
+  width: 20px;
+  height: 20px;
+  color: #8a7d96;
+  pointer-events: none;
+}
+
+.night-home .search-field input {
+  width: 100%;
+  height: 55px;
+  padding: 0 14px 0 46px;
+  border: 1px solid #fff6;
+  border-radius: 11px;
+  background: #f6f1f7;
+  color: #3c3446;
+  font-size: 15px;
+  box-shadow: 0 4px 14px #0f102222;
+}
+
+.night-home .search-field input::placeholder {
+  color: #94879f;
+}
+
+.night-home .search-button {
+  border: 1px solid #f2cd8b;
+  background: #e7b468;
+  border-radius: 10px;
+  color: #382b34;
+  padding: 0 22px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.night-home .search-button:hover {
+  background: #f1c57d;
+}
+
+.night-home .wandering-ghost {
+  position: absolute;
+  right: 12%;
+  top: 200px;
+  width: 83px;
+  height: 83px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  z-index: 3;
+  filter: drop-shadow(0 4px 9px #937ac82b);
+  animation: home-ghost-drift 7s ease-in-out infinite;
+  animation-play-state: var(--ambient-state);
+  transform-origin: center;
+  opacity: var(--scene-opacity);
+}
+
+.night-home .quiet-ghost {
+  position: absolute;
+  right: 5%;
+  bottom: 55px;
+  width: 76px;
+  height: 76px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  z-index: 4;
+  opacity: var(--scene-opacity);
+}
+
+@keyframes home-ghost-drift {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-3deg);
+  }
+  50% {
+    transform: translateY(-12px) rotate(3deg);
+  }
+}
+
+.night-home .front-branches {
+  position: absolute;
+  left: 0;
+  bottom: -45px;
+  width: 100%;
+  height: 210px;
+  z-index: 2;
+  pointer-events: none;
+  transform: translateY(var(--front-y));
+  opacity: var(--scene-opacity);
+}
+
+.night-home .ground-mist {
+  position: absolute;
+  left: -10%;
+  width: 120%;
+  bottom: -35px;
+  height: 180px;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 20% 80%, #d7cbe033, transparent 52%),
+    radial-gradient(ellipse at 75% 78%, #a497ba33, transparent 50%);
+  transform: translateY(var(--front-y));
+  opacity: var(--scene-opacity);
+  z-index: 3;
+}
+
+.night-home .catalog {
+  position: relative;
+  z-index: 6;
+  padding: 93px 40px 0;
+  scroll-margin-top: 0;
+  background: linear-gradient(transparent 0, var(--paper) 160px);
+}
+
+.night-home .catalog-inner {
+  max-width: 1160px;
+  margin: auto;
+}
+
+.night-home .catalog-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 25px;
+}
+
+.night-home .catalog-heading h2 {
+  margin: 0 0 13px;
+  font-size: 28px;
+  font-weight: 650;
+  letter-spacing: 0.5px;
+}
+
+.night-home .all-pokemon {
+  white-space: nowrap;
+  font-size: 13px;
+  color: #70576d;
+  border-bottom: 1px solid #a993ad;
+  padding: 0 0 6px;
+}
+
+.night-home .page-footer {
+  position: relative;
+  z-index: 7;
+  max-width: 1160px;
+  margin: auto;
+  border-top: 1px solid #d9cddd;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 22px 0 26px;
+  color: #9c8ca5;
+  font-size: 10px;
+}
+
+.night-home .page-footer strong {
+  font-family: 'Home Baloo', sans-serif;
+  font-weight: 800;
+  font-size: 16px;
+  color: #7c6787;
+}
+
+.night-home .page-footer > a {
+  margin-left: auto;
+  text-decoration: underline;
+}
+
+.night-home .check-control input {
+  accent-color: #8c6ca6;
+  width: 15px;
+  height: 15px;
+  margin: 0;
+}
+
+@media (min-width: 1600px) {
+  .night-home .scene-art {
+    background-size: 100% auto;
+    background-position: center 0;
+  }
+  .night-home .masthead-inner,
+  .night-home .hero-inner {
+    max-width: 1400px;
+  }
+  .night-home .nav-inner,
+  .night-home .catalog-inner {
+    max-width: 1320px;
+  }
+  .night-home .hero-intro {
+    height: 640px;
+  }
+  .night-home .scene {
+    height: 1100px;
+  }
+}
+
+@media (max-width: 1240px) {
+  .night-home .nav-inner {
+    margin: 0 40px;
+  }
+  .night-home .wandering-ghost {
+    right: 9%;
+  }
+  .night-home .scene-art {
+    background-position: 62% top;
+  }
+}
+
+@media (max-width: 900px) {
+  .night-home .masthead-inner {
+    padding-left: 30px;
+    padding-right: 30px;
+  }
+  .night-home .night-logo {
+    font-size: 72px;
+  }
+  .night-home .sky {
+    right: 0;
+    width: 290px;
+    opacity: calc(var(--brand-opacity) * 0.8);
+  }
+  .night-home .moon {
+    right: 65px;
+    width: 110px;
+    height: 110px;
+  }
+  .night-home .cloud {
+    width: 310px;
+  }
+  .night-home .hero-inner {
+    padding-left: 30px;
+    padding-right: 30px;
+  }
+  .night-home .search-copy {
+    max-width: 410px;
+  }
+  .night-home .hero-intro {
+    height: 610px;
+  }
+  .night-home .scene {
+    height: 1090px;
+  }
+  .night-home .scene-art {
+    background-position: 67% top;
+  }
+  .night-home .catalog {
+    padding-left: 30px;
+    padding-right: 30px;
+  }
+  .night-home .catalog-heading h2 {
+    font-size: 25px;
+  }
+  .night-home .page-footer {
+    margin: 0 30px;
+  }
+  .night-home .nav-links {
+    gap: 28px;
+  }
+  .night-home .nav-inner {
+    gap: 25px;
+    margin: 0 30px;
+  }
+  .night-home .wandering-ghost {
+    right: 7%;
+    top: 320px;
+  }
+}
+
+@media (max-width: 600px) {
+  .night-home {
+    scroll-padding-top: 72px;
+  }
+  .night-home .masthead {
+    height: 151px;
+  }
+  .night-home .masthead-inner {
+    padding: 35px 19px 14px;
+    align-items: flex-start;
+  }
+  .night-home .night-logo {
+    font-size: clamp(32px, 10.8vw, 54px);
+  }
+  .night-home .brand-trigger {
+    padding: 9px 0 19px;
+    max-width: 74%;
+  }
+  .night-home .sky {
+    right: 0;
+    top: 15px;
+    width: 150px;
+    height: 125px;
+  }
+  .night-home .moon {
+    right: 17px;
+    width: 80px;
+    height: 80px;
+    top: 3px;
+  }
+  .night-home .cloud {
+    width: 180px;
+    height: 45px;
+  }
+  .night-home .cloud--back {
+    top: 18px;
+    right: -17px;
+  }
+  .night-home .cloud--front {
+    top: 73px;
+    right: -25px;
+  }
+  .night-home .site-nav .nav-inner {
+    height: 54px;
+    margin: 0 19px;
+    gap: 12px;
+    justify-content: center;
+  }
+  .night-home .nav-links {
+    gap: 0;
+    justify-content: space-between;
+    flex: 1;
+    max-width: 380px;
+  }
+  .night-home .nav-links > a {
+    font-size: 13px;
+    gap: 6px;
+    padding: 0 4px;
+  }
+  .night-home .nav-links svg {
+    width: 16px;
+    height: 16px;
+  }
+  .night-home .compact-brand {
+    font-size: 19px;
+  }
+  .night-home.is-scrolled .nav-links svg {
+    display: none;
+  }
+  .night-home.is-scrolled .nav-links > a {
+    font-size: 12px;
+    padding: 0 2px;
+  }
+  .night-home .hero-intro {
+    height: 742px;
+  }
+  .night-home .hero-inner {
+    padding: 35px 22px 0;
+  }
+  .night-home .search-copy {
+    max-width: none;
+  }
+  .night-home .season-note {
+    font-size: 10px;
+    margin-bottom: 15px;
+    letter-spacing: 0.6px;
+  }
+  .night-home h1 {
+    font-size: 27px;
+    line-height: 1.55;
+    margin-bottom: 12px;
+    letter-spacing: 0.6px;
+  }
+  .night-home .hero-description {
+    font-size: 11px;
+    margin-bottom: 20px;
+    color: #c4b7d0;
+  }
+  .night-home .search-field input {
+    height: 51px;
+    font-size: 16px;
+    padding-left: 39px;
+  }
+  .night-home .search-field > svg {
+    left: 12px;
+    top: 16px;
+    width: 18px;
+    height: 18px;
+  }
+  .night-home .search-button {
+    font-size: 14px;
+    padding: 0 17px;
+  }
+  .night-home .scene {
+    height: 1130px;
+  }
+  .night-home .scene-art {
+    inset: 350px 0 0;
+    background-size: auto 730px;
+    background-position: 74% 0;
+    mask-image: linear-gradient(transparent 0%, #000 11%, #000 78%, transparent 99%);
+  }
+  .night-home .scene-shade {
+    background: linear-gradient(#171a3300 0%, #171a3333 23%, #171a3300 40%);
+  }
+  .night-home .wandering-ghost {
+    top: 420px;
+    right: 12%;
+    width: 72px;
+    height: 72px;
+  }
+  .night-home .quiet-ghost {
+    bottom: 47px;
+    right: 2%;
+    width: 65px;
+    height: 65px;
+  }
+  .night-home .front-branches {
+    height: 180px;
+    bottom: -35px;
+  }
+  .night-home .ground-mist {
+    bottom: -45px;
+    height: 150px;
+  }
+  .night-home .catalog {
+    padding: 91px 19px 0;
+    background: linear-gradient(transparent 0, var(--paper) 140px);
+  }
+  .night-home .catalog-heading {
+    align-items: flex-start;
+    gap: 12px;
+    flex-direction: column;
+  }
+  .night-home .catalog-heading h2 {
+    font-size: 22px;
+    line-height: 1.5;
+    margin-bottom: 8px;
+  }
+  .night-home .all-pokemon {
+    font-size: 11px;
+    margin-top: 3px;
+  }
+  .night-home .page-footer {
+    margin: 0 19px;
+    flex-wrap: wrap;
+    gap: 9px;
+    padding: 18px 0 67px;
+    font-size: 9px;
+  }
+  .night-home .page-footer > a {
+    width: 100%;
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 359px) {
+  .night-home .hero-inner {
+    padding-left: 17px;
+    padding-right: 17px;
+  }
+  .night-home .masthead-inner {
+    padding-left: 17px;
+  }
+  .night-home .site-nav .nav-inner {
+    margin: 0 15px;
+  }
+  .night-home .nav-links svg {
+    display: none;
+  }
+  .night-home .nav-links > a {
+    font-size: 12px;
+  }
+  .night-home .nav-inner {
+    gap: 9px !important;
+  }
+  .night-home .compact-brand {
+    font-size: 17px;
+  }
+  .night-home.is-scrolled .nav-links > a {
+    font-size: 11px;
+  }
+  .night-home .search-button {
+    padding: 0 14px;
+  }
+  .night-home .catalog {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .night-home {
+    scroll-behavior: auto;
+  }
+  .night-home .cloud,
+  .night-home .wandering-ghost {
+    animation: none !important;
+  }
+  .night-home .scene-art,
+  .night-home .sky,
+  .night-home .front-branches,
+  .night-home .ground-mist {
+    transform: none !important;
+  }
+  .night-home .search-copy,
+  .night-home .brand-trigger {
+    opacity: 1 !important;
+  }
+}
+
+/* Keep framing subtle: the painted environment already carries most branches. */
+
+.night-home .front-branches {
+  opacity: calc(var(--scene-opacity) * 0.35);
+}
+
+/* Halloween continues quietly through the reading area; cards stay opaque. */
+
+.night-home .catalog {
+  isolation: isolate;
+  color: #e9dfef;
+}
+
+.night-home .catalog::before {
+  content: '';
+  position: absolute;
+  inset: 110px 0 0;
+  z-index: -2;
+  pointer-events: none;
+  background:
+    linear-gradient(#27233888, #27233811),
+    url('/home/night/observatory-night.png') 50% 100% / cover no-repeat;
+  opacity: 0.16;
+  mask-image: linear-gradient(transparent 0%, #000 25%, #000 82%, transparent 100%);
+}
+
+.night-home .catalog::after {
+  content: '';
+  position: absolute;
+  inset: 50px 0 0;
+  z-index: -1;
+  pointer-events: none;
+  background: url('/home/night/catalog-border.svg') center/100% 100% no-repeat;
+}
+
+.night-home .catalog-heading h2 {
+  color: #e9dfef;
+}
+
+.night-home .all-pokemon {
+  color: #d0b8ce;
+  border-color: #735d80;
+}
+
+.night-home .page-footer {
+  color: #a48cb3;
+  border-color: #53435f;
+}
+
+.night-home .page-footer strong {
+  color: #c8afd8;
+}
+
+/* Compact first screen: bring real cards into view while retaining the night. */
+
+.night-home .scene {
+  position: fixed;
+  height: 100svh;
+  min-height: 0;
+  background: #171a33;
+  opacity: var(--scene-opacity);
+  z-index: -1;
+}
+
+.night-home {
+  isolation: isolate;
+}
+
+.night-home .scene-art {
+  inset: -80px 0 -180px;
+  background-position: 65% 0;
+  background-size: cover;
+  opacity: 1;
+  mask-image: linear-gradient(#000 0%, #000 75%, #0009 100%);
+}
+
+.night-home .scene-shade {
+  background: linear-gradient(90deg, #171a3399 0%, #171a3340 42%, transparent 72%);
+}
+
+.night-home .masthead {
+  height: 142px;
+}
+
+.night-home .masthead-inner {
+  padding-top: 21px;
+  padding-bottom: 15px;
+}
+
+.night-home .night-logo {
+  font-size: 72px;
+}
+
+.night-home .sky {
+  top: 9px;
+  height: 125px;
+}
+
+.night-home .moon {
+  width: 98px;
+  height: 98px;
+}
+
+.night-home .cloud {
+  height: 60px;
+}
+
+.night-home .cloud--back {
+  top: 13px;
+}
+
+.night-home .cloud--front {
+  top: 72px;
+}
+
+.night-home .nav-inner {
+  height: 54px;
+}
+
+.night-home .hero-intro {
+  height: 276px;
+}
+
+.night-home .hero-inner {
+  padding-top: 23px;
+}
+
+.night-home .search-copy {
+  max-width: 520px;
+}
+
+.night-home .season-note {
+  margin-bottom: 12px;
+  font-size: 11px;
+}
+
+.night-home h1 {
+  font-size: 28px;
+  line-height: 1.45;
+  margin-bottom: 10px;
+}
+
+.night-home h1 br {
+  display: none;
+}
+
+.night-home .hero-description {
+  margin-bottom: 18px;
+  font-size: 12px;
+}
+
+.night-home .search-field input {
+  height: 51px;
+}
+
+.night-home .search-field > svg {
+  top: 15px;
+}
+
+.night-home .wandering-ghost {
+  top: 25px;
+  right: 10%;
+  width: 73px;
+  height: 73px;
+}
+
+.night-home .quiet-ghost {
+  bottom: 20px;
+  right: 24%;
+  width: 65px;
+  height: 65px;
+}
+
+.night-home .front-branches {
+  height: 130px;
+  bottom: -25px;
+}
+
+.night-home .ground-mist {
+  height: 110px;
+  bottom: -12px;
+  opacity: calc(var(--scene-opacity) * 0.55);
+}
+
+.night-home .catalog {
+  padding-top: 26px;
+  background: linear-gradient(#2723383d, #272338d9 170px);
+}
+
+.night-home .catalog::before {
+  opacity: 0.08;
+}
+
+.night-home .catalog-heading h2 {
+  font-size: 25px;
+  margin-bottom: 8px;
+}
+
+.night-home .page-footer {
+  background: #272338bf;
+}
+
+@media (min-width: 1600px) {
+  .night-home .hero-intro {
+    height: 290px;
+  }
+  .night-home .scene {
+    height: 100svh;
+  }
+  .night-home .scene-art {
+    background-size: cover;
+  }
+  .night-home .masthead {
+    height: 148px;
+  }
+}
+
+@media (max-width: 900px) {
+  .night-home .masthead {
+    height: 132px;
+  }
+  .night-home .masthead-inner {
+    padding-top: 20px;
+  }
+  .night-home .night-logo {
+    font-size: 62px;
+  }
+  .night-home .sky {
+    top: 8px;
+  }
+  .night-home .moon {
+    width: 94px;
+    height: 94px;
+  }
+  .night-home .hero-intro {
+    height: 295px;
+  }
+  .night-home .search-copy {
+    max-width: 440px;
+  }
+  .night-home h1 {
+    font-size: 25px;
+  }
+  .night-home .scene {
+    height: 100svh;
+  }
+  .night-home .scene-art {
+    background-position: 69% 0;
+  }
+  .night-home .wandering-ghost {
+    top: 105px;
+    right: 4%;
+  }
+  .night-home .catalog {
+    padding-top: 25px;
+  }
+}
+
+@media (max-width: 600px) {
+  .night-home .masthead {
+    height: 126px;
+  }
+  .night-home .masthead-inner {
+    padding-top: 26px;
+  }
+  .night-home .night-logo {
+    font-size: clamp(32px, 10.8vw, 54px);
+  }
+  .night-home .sky {
+    top: 9px;
+  }
+  .night-home .moon {
+    width: 74px;
+    height: 74px;
+  }
+  .night-home .cloud {
+    height: 42px;
+  }
+  .night-home .cloud--front {
+    top: 65px;
+  }
+  .night-home .site-nav .nav-inner {
+    height: 52px;
+  }
+  .night-home .hero-intro {
+    height: 408px;
+  }
+  .night-home .hero-inner {
+    padding-top: 24px;
+  }
+  .night-home .search-copy {
+    max-width: none;
+  }
+  .night-home .season-note {
+    font-size: 10px;
+    margin-bottom: 12px;
+  }
+  .night-home h1 {
+    font-size: 26px;
+    line-height: 1.5;
+    margin-bottom: 10px;
+  }
+  .night-home h1 br {
+    display: initial;
+  }
+  .night-home .hero-description {
+    font-size: 11px;
+    margin-bottom: 19px;
+  }
+  .night-home .scene {
+    height: 100svh;
+  }
+  .night-home .scene-art {
+    inset: 65px 0 -140px;
+    background-position: 74% 0;
+    background-size: auto 850px;
+    mask-image: linear-gradient(transparent, #000 18%, #000 100%);
+  }
+  .night-home .scene-shade {
+    background: linear-gradient(#171a3380 0%, #171a33b3 46%, #171a3340 77%);
+  }
+  .night-home .wandering-ghost {
+    top: 290px;
+    right: 9%;
+    width: 64px;
+    height: 64px;
+  }
+  .night-home .quiet-ghost {
+    bottom: 13px;
+    right: 38%;
+    width: 59px;
+    height: 59px;
+  }
+  .night-home .front-branches {
+    height: 120px;
+    bottom: -10px;
+  }
+  .night-home .ground-mist {
+    height: 100px;
+  }
+  .night-home .catalog {
+    padding-top: 27px;
+    background: linear-gradient(#27233869, #272338e0 140px);
+  }
+  .night-home .catalog-heading {
+    gap: 9px;
+  }
+  .night-home .catalog-heading h2 {
+    font-size: 22px;
+  }
+  .night-home .page-footer {
+    background: transparent;
+  }
+}
+
+/* Alternate camera framings only; page geometry and the source PNG stay intact. */
+
+.night-home .scene--framed .scene-art {
+  inset: 0;
+  background-size: var(--frame-width) var(--frame-height);
+  background-position: center bottom;
+  background-repeat: no-repeat;
+  transform: translateY(calc(-1 * var(--frame-shift, 0px)));
+  mask-image: linear-gradient(90deg, transparent 0%, #000 3%, #000 97%, transparent 100%);
+}
+
+.night-home .scene--fit .scene-art {
+  mask-image: none;
+}
+
+@media (max-width: 600px) {
+  .night-home .scene--framed:not(.scene--fit) .scene-art {
+    background-position: 74% bottom;
+  }
+}
+
+/* Keep the source assets and approved frame geometry. No lossy conversion. */
+
+.night-home .scene {
+  will-change: opacity;
+}
+
+.night-home .scene--flattened .scene-art {
+  background-image:
+    linear-gradient(90deg, #171a3399 0%, #171a3340 42%, transparent 72%),
+    url('/home/night/observatory-night.png');
+  background-size:
+    100% 100%,
+    var(--frame-width) var(--frame-height);
+  background-position:
+    center,
+    center bottom;
+  background-repeat: no-repeat;
+}
+
+.night-home .scene--flattened .scene-shade {
+  display: none;
+}
+
+@media (max-width: 600px) {
+  .night-home .scene--flattened .scene-art {
+    background-image:
+      linear-gradient(#171a3380 0%, #171a33b3 46%, #171a3340 77%),
+      url('/home/night/observatory-night.png');
+  }
+  .night-home .scene--flattened:not(.scene--fit) .scene-art {
+    background-position:
+      center,
+      74% bottom;
+  }
+}
+
+/* One shared forest floor, not a collection of miniature white cards. */
+
+.night-home .catalog {
+  padding-top: 22px;
+  background: linear-gradient(transparent, #272338a8 120px, #272338e0 260px);
+}
+
+.night-home .catalog-heading {
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 10px;
+}
+
+.night-home .catalog-heading h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.night-home .catalog-actions {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.night-home .catalog-actions button {
+  border: 0;
+  background: none;
+  color: #dcc1e5;
+  padding: 7px 0;
+  font-size: 12px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.night-home .catalog-actions .all-pokemon {
+  font-size: 12px;
+  padding-bottom: 4px;
+}
+
+.night-home .catalog-inner {
+  max-width: 1320px;
+}
+
+.night-home .night-visitors {
+  --visitor-size: 156px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 14px 12px;
+  padding: 14px 0 12px;
+}
+
+.night-home .visitor-place {
+  min-width: 0;
+  flex: 0 0 calc((100% - 72px) / 7);
+}
+
+.night-home .visitor {
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+  padding: 5px 3px 9px;
+  border-radius: 12px;
+  color: #e9dfef;
+}
+
+.night-home .visitor:focus-visible {
+  outline-offset: 1px;
+}
+
+.night-home .visitor-sprite {
+  display: grid;
+  place-items: center;
+  position: relative;
+  width: 100%;
+  height: 168px;
+}
+
+.night-home .visitor-sprite::before {
+  content: '';
+  position: absolute;
+  width: 70px;
+  height: 13px;
+  bottom: 9px;
+  background: radial-gradient(ellipse, #0d102c99, transparent 72%);
+  pointer-events: none;
+}
+
+.night-home .visitor--pumpkin .visitor-sprite::before {
+  width: 85px;
+  height: 26px;
+  bottom: 7px;
+  background: radial-gradient(ellipse, #e7a34b3d, transparent 72%);
+}
+
+.night-home .visitor-motion {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: var(--visitor-size);
+  height: var(--visitor-size);
+  transform-origin: 50% 80%;
+  transition: transform 0.18s ease-out;
+  pointer-events: none;
+}
+
+.night-home .visitor-image {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+.night-home .visitor-image[data-playing='true'] {
+  width: var(--animated-width, 100%);
+  height: var(--animated-height, 100%);
+}
+
+.night-home .visitor-place:nth-child(3n + 2) .visitor-sprite {
+  top: -5px;
+}
+
+.night-home .visitor-place:nth-child(5n + 3) .visitor-sprite {
+  top: 3px;
+}
+
+.night-home .visitor--pumpkin .visitor-motion {
+  width: calc(var(--visitor-size) + 6px);
+  height: calc(var(--visitor-size) + 6px);
+}
+
+.night-home .visitor-name {
+  color: #e7dfed;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.night-home .visitor--pumpkin .visitor-name {
+  color: #f0cc94;
+}
+
+.night-home .visitor-number {
+  color: #a08caf;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.night-home .visitor:hover,
+.night-home .visitor:focus-within {
+  z-index: 2;
+}
+
+.night-home .visitor:hover .visitor-motion,
+.night-home .visitor:focus-visible .visitor-motion,
+.night-home .visitor:active .visitor-motion,
+.night-home .visitor--pressed .visitor-motion {
+  transform: translateY(-5px) scale(1.12);
+}
+
+@media (hover: hover) {
+  .night-home.visitor-motion-enabled .visitor:hover .visitor-motion {
+    animation: home-visitor-wiggle 0.85s ease-in-out infinite;
+  }
+}
+
+.night-home.visitor-motion-enabled .visitor:focus-visible .visitor-motion,
+.night-home.visitor-motion-enabled .visitor:active .visitor-motion,
+.night-home.visitor-motion-enabled .visitor--pressed .visitor-motion {
+  animation: home-visitor-wiggle 0.85s ease-in-out infinite;
+}
+
+@keyframes home-visitor-wiggle {
+  0%,
+  100% {
+    transform: translateY(-5px) scale(1.12) rotate(-3deg);
+  }
+  50% {
+    transform: translateY(-5px) scale(1.12) rotate(3deg);
+  }
+}
+
+.night-home .moon {
+  animation: home-moon-drift 14s ease-in-out infinite;
+  animation-play-state: paused;
+}
+
+@keyframes home-moon-drift {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(2px, -6px);
+  }
+}
+
+.night-home .cloud--front {
+  animation-name: home-cloud-crossing;
+  animation-duration: 18s;
+}
+
+.night-home .cloud--back {
+  animation-name: home-cloud-crossing-back;
+  animation-duration: 30s;
+}
+
+@keyframes home-cloud-crossing {
+  from {
+    transform: translateX(-48px);
+  }
+  to {
+    transform: translateX(72px);
+  }
+}
+
+@keyframes home-cloud-crossing-back {
+  from {
+    transform: translateX(-36px);
+  }
+  to {
+    transform: translateX(52px);
+  }
+}
+
+.night-home .lantern-yard {
+  position: relative;
+  min-height: 195px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 0 25px;
+}
+
+.night-home .lantern-yard::before {
+  content: '';
+  position: absolute;
+  width: min(510px, 100%);
+  height: 48px;
+  top: 106px;
+  background: radial-gradient(ellipse, #8a62551c, transparent 72%);
+  pointer-events: none;
+}
+
+.night-home .lantern-guest-space {
+  height: 88px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.night-home .lantern-guest {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #eedcc4;
+  font-size: 12px;
+}
+
+.night-home .lantern-guest[hidden] {
+  display: none;
+}
+
+.night-home .lantern-guest img {
+  width: 72px;
+  height: 72px;
+  image-rendering: pixelated;
+  object-fit: contain;
+}
+
+.night-home .lanterns {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+}
+
+.night-home .jack {
+  position: relative;
+  width: 54px;
+  height: 58px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: #92734f;
+  padding: 0;
+}
+
+.night-home .jack::before {
+  content: '';
+  position: absolute;
+  inset: -10px;
+  background: radial-gradient(ellipse, #e7a34b44, transparent 67%);
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
+}
+
+.night-home .jack svg {
+  position: relative;
+  width: 49px;
+  height: 49px;
+  image-rendering: pixelated;
+}
+
+.night-home .jack .jack-face {
+  fill: #35273c;
+  transition: fill 0.2s;
+}
+
+.night-home .jack[aria-pressed='true'] {
+  color: #dba052;
+}
+
+.night-home .jack[aria-pressed='true']::before {
+  opacity: 1;
+}
+
+.night-home .jack[aria-pressed='true'] .jack-face {
+  fill: #ffdd82;
+}
+
+.night-home #lantern-status {
+  margin: 12px 0 0;
+  color: #bca7c9;
+  font-size: 12px;
+  line-height: 1.7;
+  text-align: center;
+}
+
+.night-home #reset-lamps {
+  border: 0;
+  padding: 7px 10px;
+  background: none;
+  color: #c7afcf;
+  font-size: 11px;
+  text-decoration: underline;
+}
+
+.night-home .lantern-actions {
+  height: 28px;
+  display: grid;
+  place-items: center;
+  width: 100%;
+}
+
+.night-home .page-footer {
+  display: block;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  background: #272338bf;
+  font-size: 10px;
+}
+
+.night-home .page-footer-inner {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr) max-content;
+  align-items: baseline;
+  gap: 18px;
+  width: calc(100% - 80px);
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 22px 0 30px;
+}
+
+.night-home .page-footer-inner > a {
+  margin-left: 0;
+  width: auto;
+  text-decoration: underline;
+}
+
+.night-home .page-footer-inner > span {
+  margin-right: 0;
+}
+
+@media (min-width: 1600px) {
+  .night-home .night-visitors {
+    --visitor-size: 168px;
+  }
+  .night-home .visitor-sprite {
+    height: 180px;
+  }
+}
+
+@media (max-width: 1100px) {
+  .night-home .visitor-place {
+    flex-basis: calc((100% - 48px) / 5);
+  }
+  .night-home .night-visitors {
+    --visitor-size: 140px;
+  }
+  .night-home .visitor-sprite {
+    height: 150px;
+  }
+}
+
+@media (max-width: 900px) {
+  .night-home .page-footer-inner {
+    width: calc(100% - 60px);
+  }
+}
+
+@media (max-width: 700px) {
+  .night-home .visitor-place {
+    flex-basis: calc((100% - 36px) / 4);
+  }
+  .night-home .night-visitors {
+    --visitor-size: 128px;
+  }
+  .night-home .visitor-sprite {
+    height: 140px;
+  }
+}
+
+@media (max-width: 600px) {
+  .night-home .catalog {
+    padding-top: 20px;
+  }
+  .night-home .catalog-heading {
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+  }
+  .night-home .catalog-heading h2 {
+    font-size: 18px;
+    margin: 0;
+  }
+  .night-home .catalog-actions {
+    gap: 10px;
+  }
+  .night-home .catalog-actions .all-pokemon,
+  .night-home .catalog-actions button {
+    font-size: 10px;
+  }
+  .night-home .night-visitors {
+    --visitor-size: 110px;
+    gap: 10px 3px;
+  }
+  .night-home .visitor-place {
+    flex-basis: calc((100% - 6px) / 3);
+  }
+  .night-home .visitor {
+    padding-top: 0;
+  }
+  .night-home .visitor-name {
+    font-size: 12px;
+  }
+  .night-home .visitor-sprite {
+    height: 120px;
+  }
+  .night-home .lanterns {
+    gap: 9px;
+  }
+  .night-home .jack {
+    width: 46px;
+    height: 52px;
+  }
+  .night-home .jack svg {
+    width: 42px;
+    height: 42px;
+  }
+  .night-home .lantern-yard {
+    padding-bottom: 22px;
+  }
+  .night-home .page-footer-inner {
+    width: calc(100% - 38px);
+    padding-bottom: 72px;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 359px) {
+  .night-home .night-visitors {
+    --visitor-size: 92px;
+  }
+  .night-home .visitor-sprite {
+    height: 104px;
+  }
+  .night-home .page-footer-inner {
+    width: calc(100% - 28px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .night-home .moon,
+  .night-home .visitor-motion {
+    animation: none !important;
+  }
+  .night-home .visitor-motion,
+  .night-home .jack::before,
+  .night-home .jack .jack-face {
+    transition: none;
+  }
+}
+
+/* Fade at the actual image boundaries, including wide/tall fullscreen ratios. */
+
+.night-home .scene--framed .scene-art {
+  mask-image: url('/home/night/frame-edge-mask.svg');
+  mask-size: var(--frame-width) var(--frame-height);
+  mask-position: center bottom;
+  mask-repeat: no-repeat;
+}
+
+.night-home .scene {
+  --edge-width: clamp(64px, calc((100vw - var(--frame-width, 100vw)) / 2 + 48px), 24vw);
+}
+
+.night-home .scene:not(.scene--framed) {
+  --edge-width: 64px;
+}
+
+.night-home .scene-edge {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    url('/home/night/edge-branches.svg'),
+    linear-gradient(
+      90deg,
+      #171a33,
+      transparent var(--edge-width),
+      transparent calc(100% - var(--edge-width)),
+      #171a33
+    ),
+    linear-gradient(#171a33, transparent 56px, transparent calc(100% - 32px), #171a33);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+}
+
+@media (max-width: 600px) {
+  .night-home .scene--framed:not(.scene--fit) .scene-art {
+    mask-position: 74% bottom;
+  }
+}
+
+/* Small, finite background scenes. The existing foreground remains clickable. */
+
+.night-home .scene-stories {
+  --flight-size: 96;
+  --scare-scale: 2;
+  --bush-width: 120;
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.night-home .scene-stories * {
+  pointer-events: none;
+}
+
+.night-home .scene-edge {
+  z-index: 2;
+}
+
+.night-home .story {
+  position: absolute;
+  pointer-events: none;
+}
+
+.night-home .story-actor {
+  position: absolute;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+.night-home .story-flight {
+  width: calc(var(--flight-size) * 1px);
+  height: calc(var(--flight-size) * 1px);
+}
+
+.night-home .story-flight .story-actor {
+  width: 100%;
+  height: 100%;
+  transform-origin: top left;
+}
+
+.night-home .story-scare {
+  width: calc(180px * var(--scare-scale));
+  height: calc(72px * var(--scare-scale));
+}
+
+.night-home .story-ghost {
+  left: calc(116px * var(--scare-scale));
+  top: 0;
+  width: calc(44px * var(--scare-scale));
+  height: calc(44px * var(--scare-scale));
+}
+
+.night-home .story-phantump {
+  left: calc(76px * var(--scare-scale));
+  top: calc(20px * var(--scare-scale));
+  width: calc(42px * var(--scare-scale));
+  height: calc(42px * var(--scare-scale));
+}
+
+.night-home .story-tree {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: calc(48px * var(--scare-scale));
+  height: calc(72px * var(--scare-scale));
+  z-index: 2;
+}
+
+.night-home .story-bush {
+  width: calc(var(--bush-width) * 1px);
+  height: calc(var(--bush-width) * 52px / 70);
+}
+
+.night-home .story-bush-image {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+@media (max-width: 600px), (max-height: 500px) {
+  .night-home .scene-stories {
+    --flight-size: 72;
+    --scare-scale: 1.5;
+    --bush-width: 96;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .night-home .scene-stories {
+    display: none;
+  }
+}

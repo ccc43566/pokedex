@@ -1,0 +1,82 @@
+{
+  "version": "2026-10-29.v1",
+  "kind": "project-explanation",
+  "source_url": "project://pokedex/evolution-explanations/2026-10-29.v1",
+  "basis": "User-approved Chinese glosses, interpreted against preserved PokéAPI fields and variable definitions; never an upstream translation.",
+  "triggers": {
+    "level-up": "等级提升",
+    "trade": "交换或使用联系绳",
+    "use-item": "使用道具",
+    "shed": "蜕壳时产生额外宝可梦",
+    "spin": "旋转",
+    "tower-of-darkness": "在恶之塔修行",
+    "tower-of-waters": "在水之塔修行",
+    "three-critical-hits": "一场对战中命中要害三次",
+    "take-damage": "受到伤害后前往指定地点",
+    "in-battle-level-up": "在对战中提升等级",
+    "agile-style-move": "使用迅疾招式",
+    "strong-style-move": "使用刚猛招式",
+    "recoil-damage": "受到反作用力伤害",
+    "use-move": "使用指定招式",
+    "three-defeated-bisharp": "击败三只携带头领凭证的劈斩司令",
+    "gimmighoul-coins": "收集 999 枚索财灵的硬币",
+    "meltan-candies": "Pokémon GO 中使用 400 颗美录坦糖果",
+    "unclassified": "未分类"
+  },
+  "variables": {
+    "encryption-constant": {
+      "zh": "加密常数", "symbol": "EC", "source": "pokemon", "data_type": "uint32",
+      "description_requirements": ["unsigned 32-bit integer"], "role": "internal"
+    },
+    "personality-value": {
+      "zh": "性格值", "symbol": "PID", "source": "pokemon", "data_type": "uint32",
+      "description_requirements": ["unsigned 32-bit integer"], "role": "internal"
+    },
+    "spin-direction": {
+      "zh": "旋转方向", "symbol": "SPIN_DIR", "source": "player-input", "data_type": "uint8",
+      "description_requirements": ["0 for clockwise", "1 for counter-clockwise"],
+      "role": "direction", "values": {"0": {"zh": "顺时针", "en": "clockwise"}, "1": {"zh": "逆时针", "en": "counter-clockwise"}}
+    },
+    "spin-duration": {
+      "zh": "旋转时长", "symbol": "SPIN_SEC", "source": "player-input", "data_type": "uint8",
+      "description_requirements": ["length in seconds"], "role": "duration", "unit": "seconds"
+    }
+  },
+  "branch_labels": {
+    "dudunsparce-two-segment": "二节形态",
+    "dudunsparce-three-segment": "三节形态",
+    "maushold-family-of-four": "四只家庭",
+    "maushold-family-of-three": "三只家庭"
+  },
+  "special_edges": [
+    {
+      "source_species_id": 290, "target_species_id": 292, "trigger": "shed",
+      "zh": "土居忍士进化为铁面忍者时，蜕壳产生的额外宝可梦",
+      "en": "An extra Pokémon produced from the shed shell when Nincada evolves into Ninjask.",
+      "basis": "Preserved level-up and shed edges are separate; the shed edge has no min_level, item or party-space fields."
+    }
+  ],
+  "supplements": [
+    {
+      "id": 1, "source_species_id": 290, "target_species_id": 292, "trigger": "shed",
+      "kind": "verified-supplement", "verified_at": "2026-10-29",
+      "source_url": "https://bulbapedia.bulbagarden.net/wiki/Shedinja_(Pok%C3%A9mon)#Evolution_data",
+      "corroborating_url": "https://www.smogon.com/ingame/guides/special_ball#shedinja",
+      "raw_pokeapi_fields": false,
+      "scope": [
+        {
+          "version_group_ids": [5, 6, 7],
+          "zh": "第三世代《红宝石／蓝宝石／绿宝石》《火红／叶绿》：队伍至少留一个空位；不需要额外准备普通精灵球。",
+          "en": "Generation III Ruby/Sapphire/Emerald and FireRed/LeafGreen: keep a party slot open; no extra regular Poké Ball is required."
+        },
+        {
+          "version_group_ids": [8, 9, 10],
+          "zh": "第四世代《钻石／珍珠／白金》《心金／魂银》：队伍至少留一个空位，包中至少有一个普通精灵球；会消耗该球，并非任意球类都可替代。",
+          "en": "Generation IV Diamond/Pearl/Platinum and HeartGold/SoulSilver: keep a party slot open and a regular Poké Ball in the Bag; that ball is consumed. Other ball types do not substitute."
+        }
+      ],
+      "scope_note_zh": "这些是独立核实的版本补充，并非 PokéAPI 原始条件字段；未将其外推到其他游戏或特殊获取方式。",
+      "scope_note_en": "These separately verified version notes are not raw PokéAPI conditions; no applicability is inferred for other games or acquisition methods."
+    }
+  ]
+}
