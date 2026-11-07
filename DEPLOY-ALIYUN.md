@@ -12,11 +12,25 @@
 | -------------------------------- | ------ | ------------------------------------- |
 | 代码                               | 约 45MB | 已推到 GitHub，服务器 `git clone` 就能拿到，不用手动传 |
 | 数据库 `pokedex.dump`               | 48MB   | 必须传。恢复后网站才有宝可梦数据                      |
-| 核心图片 `media-core.tar`            | 380MB  | 必须传。宝可梦立绘、形态图                         |
+| 主图 `media-app.tar`                | 380MB  | 必须传。宝可梦立绘/正面/异色/Home 图 + 道具图          |
 | 程序镜像 `pokedex-images.tar`        | 371MB  | 必须传。本机构建好的 4 个镜像，`docker load` 直接导入  |
 | 历史图鉴 `media-version-sprites.tar` | 24.4GB | **可选**。各世代游戏原版像素图，先不要传                |
 
 合计需要上传 **约 800MB**。
+
+### 图片是怎么组织的（重要）
+
+数据库里所有图片路径都指向 `version-sprites/` 目录，文件名是内容的 SHA-256，所以同一张图只存一份：
+
+| 来源表 | 用途 | 行数 | 对应文件 |
+| --- | --- | --- | --- |
+| `media_asset` | 详情页主图：`official-artwork` 官方立绘、`front-default` 正面、`front-shiny` 异色、`home` Home 渲染 | 11,475 | 5,962 |
+| `item_media` | 道具图片（与主图有部分重叠） | 2,223 | 合计 7,133 |
+| `version_sprite` | 详情页「历史版本图鉴」各世代游戏像素图 | 154,682 | 66,218（24GB） |
+
+`media-app.tar` 装的正好是前两张表引用的 **7,133 个文件**（380MB），网站主图就齐了。第三张表的图属于附加功能，占 24GB，先不传。
+
+> `pokemon/` 和 `pokemon-form/` 这两个目录里还有一份 11,475 个文件的旧副本，命名是 `pokemon/25/front-default.png` 这种，数据库已经不再引用，属于早期存储方案的遗留物，可以删掉腾出 397MB。
 
 ### 为什么传镜像，而不是在服务器上构建
 
@@ -122,19 +136,27 @@ Workbench 网页上传大文件容易断，用 WinSCP 更稳，支持断点续�
 
 ```
 pokedex.dump
-media-core.tar
+media-app.tar
 pokedex-images.tar
 ```
 
 > 这三个文件合计 799MB。按家宽 20Mbps 上行算约 6 分钟，慢一点半小时内也能完。中途断了右键文件选「续传」。
 
-传完在服务器上校验一下，确认没传坏：
+传完在服务器上校验，确认没传坏：
 
 ```bash
-cd /opt/pokedex/data && sha256sum pokedex.dump media-core.tar pokedex-images.tar
+cd /opt/pokedex/data && ls -l pokedex.dump media-app.tar pokedex-images.tar
 ```
 
-对照本机 `_deploy\SHA256SUMS.txt` 里的值，一致就继续。
+字节数应该正好是：
+
+```
+49,321,896   pokedex.dump
+397,528,064  media-app.tar
+389,010,432  pokedex-images.tar
+```
+
+不一致就是传断了，右键「续传」再传一次。
 
 如果你还想要历史图鉴，同一个目录下的 `media-version-sprites.tar`（24.4GB）也拖过去——**但先确认已经扩容磁盘**。
 

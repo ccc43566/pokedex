@@ -131,20 +131,27 @@ else
   echo "目标数据卷: $VOL_MEDIA"
 fi
 
-if [ -f "data/media-core.tar" ]; then
-  # 用已经构建好的 api 镜像来解压，避免额外依赖外网镜像
-  EXISTING=$(docker compose run --rm --no-deps --entrypoint sh api -c \
-    'ls -A /app/media 2>/dev/null | wc -l' 2>/dev/null | tr -d '[:space:]' || echo 0)
-  if [ "${EXISTING:-0}" -gt 0 ]; then
-    echo "数据卷里已有文件，跳过核心图片解压"
+# 网站主图（立绘/正面/异色/Home）由 media_asset 表引用，
+# 全部位于 version-sprites/ 目录下，共约 5962 个去重文件、376MB。
+MEDIA_TAR=""
+for f in data/media-app.tar data/media-core.tar; do
+  if [ -f "$f" ]; then MEDIA_TAR="$f"; break; fi
+done
+
+if [ -n "$MEDIA_TAR" ]; then
+  # 判断依据：version-sprites 目录是否存在（pokemon/ 是早期遗留目录，不算数）
+  HAS_SPRITES=$(docker compose run --rm --no-deps --entrypoint sh api -c \
+    '[ -d /app/media/version-sprites ] && echo yes || echo no' 2>/dev/null | tr -d '[:space:]' || echo "no")
+  if [ "$HAS_SPRITES" = "yes" ]; then
+    echo "数据卷里已有 version-sprites，跳过图片解压"
   else
-    echo "正在解压 data/media-core.tar（约 380MB）..."
+    echo "正在解压 $MEDIA_TAR ..."
     docker compose run --rm --no-deps -v "$ROOT/data:/backup:ro" api \
-      tar -C /app/media -xf /backup/media-core.tar
-    echo "核心图片解压完成"
+      tar -C /app/media -xf "/backup/$(basename "$MEDIA_TAR")"
+    echo "主图解压完成"
   fi
 else
-  echo "警告：未找到 data/media-core.tar，跳过"
+  echo "警告：未找到 data/media-app.tar，网站会没有图片"
 fi
 
 if [ -f "data/media-version-sprites.tar" ]; then
